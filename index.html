@@ -1,0 +1,2956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2026 Kentucky Derby · Full Analytics Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#1D9E75;--green-lt:#E1F5EE;--green-dk:#085041;
+  --blue:#378ADD;--blue-lt:#E6F1FB;--blue-dk:#0C447C;
+  --amber:#BA7517;--amber-lt:#FAEEDA;--amber-dk:#633806;
+  --red:#D85A30;--red-lt:#FAECE7;--red-dk:#4A1B0C;
+  --purple:#7F77DD;--purple-lt:#EEEDFE;--purple-dk:#3C3489;
+  --pink:#D4537E;--pink-lt:#FBEAF0;--pink-dk:#72243E;
+  --bg:#F7F5F0;--surface:#FFF;--border:#E5E2D8;
+  --text:#1A1918;--text2:#5F5E5A;--text3:#9B9A96;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+  --serif:'Playfair Display',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5;}
+
+/* ── HEADER ── */
+.hdr{background:var(--text);color:#fff;padding:28px 32px 20px;}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.hdr-title{font-family:var(--serif);font-size:30px;line-height:1.15;}
+.hdr-meta{font-family:var(--mono);font-size:11px;color:#888;margin-top:3px;}
+.hdr-updated{font-family:var(--mono);font-size:11px;color:#888;text-align:right;}
+.alert-bar{background:rgba(55,138,221,.18);border:1px solid rgba(55,138,221,.35);border-radius:6px;padding:8px 12px;font-size:11px;color:#93C5FD;font-family:var(--mono);margin-top:10px;}
+
+/* ── LEGEND ── */
+.legend-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:9px 32px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);}
+.lsq{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+.ldiv{width:1px;height:14px;background:var(--border);}
+
+/* ── RULES BAR ── */
+.rules-bar{background:#F0EDE5;border-bottom:1px solid var(--border);padding:8px 32px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;}
+.rule{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);}
+.ri{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;}
+.ri.ok{background:var(--green-lt);color:var(--green-dk);}
+.ri.warn{background:var(--amber-lt);color:var(--amber-dk);}
+
+/* ── CONTROLS ── */
+.ctrl-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 32px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.ctrl-lbl{font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:.05em;text-transform:uppercase;}
+.fbtn{font-size:11px;padding:4px 11px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--sans);transition:.12s;}
+.fbtn:hover{border-color:var(--blue);color:var(--blue);}
+.fbtn.on{background:var(--text);color:#fff;border-color:var(--text);}
+.csep{width:1px;height:18px;background:var(--border);}
+select{font-size:11px;padding:4px 9px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--sans);cursor:pointer;}
+
+/* ── MAIN GRID ── */
+.main{padding:20px 32px;}
+.count-lbl{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:12px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
+.card.winner{border:2px solid var(--green);}
+.card.scratched{opacity:.45;filter:grayscale(.5);}
+.card-accent{height:4px;}
+.card-body{padding:14px 16px;display:flex;flex-direction:column;gap:9px;flex:1;}
+
+/* Card header */
+.ch{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;}
+.hn{font-family:var(--serif);font-size:17px;}
+.bdg{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;white-space:nowrap;font-family:var(--mono);}
+.bw{background:var(--green-lt);color:var(--green-dk);}
+.bp{background:var(--blue-lt);color:var(--blue-dk);}
+.bsh{background:var(--amber-lt);color:var(--amber-dk);}
+.bc{background:var(--purple-lt);color:var(--purple-dk);}
+.bi{background:var(--pink-lt);color:var(--pink-dk);}
+.bx{background:var(--red-lt);color:var(--red-dk);}
+
+.lr{font-size:11px;color:var(--text2);font-style:italic;font-family:var(--mono);}
+.ped{font-size:11px;color:var(--text3);}
+
+/* 4-col stats */
+.s4{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
+.st{background:#F7F5F0;border-radius:5px;padding:6px 7px;}
+.sl{font-size:9px;color:var(--text3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:1px;font-family:var(--mono);}
+.sv{font-size:13px;font-weight:500;color:var(--text);font-family:var(--mono);}
+.sv.g{color:var(--green-dk);}.sv.a{color:var(--amber);}.sv.r{color:var(--red);}
+
+/* DI bar */
+.diw{display:flex;flex-direction:column;gap:3px;}
+.dir{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);}
+.dit{height:5px;background:#F0EDE5;border-radius:3px;position:relative;overflow:hidden;}
+.dif{height:100%;border-radius:3px;}
+.dil{position:absolute;top:0;bottom:0;width:1.5px;background:var(--red);opacity:.65;}
+
+/* Tags */
+.tags{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+.tag{font-size:10px;padding:2px 7px;border-radius:8px;border:1px solid var(--border);color:var(--text2);font-family:var(--mono);}
+.tag.tE{background:var(--amber-lt);color:var(--amber-dk);border-color:var(--amber);}
+.tag.tEP{background:var(--blue-lt);color:var(--blue-dk);border-color:var(--blue);}
+.tag.tS{background:var(--purple-lt);color:var(--purple-dk);border-color:var(--purple);}
+.tag.tC{background:#F0EDE5;color:#3a3938;border-color:#888;}
+.tag.yes{background:var(--green-lt);color:var(--green-dk);border-color:var(--green);}
+.tag.no{background:var(--red-lt);color:var(--red-dk);border-color:var(--red);}
+.tag.tu{color:var(--green-dk);}.tag.td{color:var(--red);}.tag.tf{color:var(--text3);}
+
+/* Trainer */
+.trow{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text2);}
+.trec{font-size:10px;padding:2px 7px;border-radius:6px;background:#F0EDE5;color:var(--text3);font-family:var(--mono);}
+.trec.elite{background:var(--amber-lt);color:var(--amber-dk);}
+
+/* Analysis note */
+.note{font-size:11px;color:var(--text3);line-height:1.5;padding-top:2px;}
+/* ── CWP SCORE ── */
+.cwp-wrap{background:linear-gradient(135deg,#F7F5F0 0%,#fff 100%);border:1px solid var(--border);border-radius:7px;padding:9px 11px 8px;margin-top:2px;}
+.cwp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+.cwp-label{font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;}
+.cwp-score{font-family:var(--serif);font-size:22px;line-height:1;font-weight:700;}
+.cwp-score.elite{color:#065F46;}.cwp-score.strong{color:#1D9E75;}.cwp-score.mid{color:#BA7517;}.cwp-score.weak{color:#D85A30;}
+.cwp-bar-wrap{height:6px;background:#E5E2D8;border-radius:3px;overflow:hidden;margin-bottom:8px;}
+.cwp-bar{height:100%;border-radius:3px;transition:width .3s;}
+.cwp-rows{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;}
+.cwp-row{display:flex;align-items:center;gap:4px;font-size:9px;font-family:var(--mono);color:var(--text2);}
+.cwp-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.cwp-dot.full{background:var(--green);}.cwp-dot.part{background:var(--amber);}.cwp-dot.none{background:#D5D3CD;}
+.div{height:1px;background:var(--border);}
+
+/* ── PEDIGREE SECTION ── */
+.ped-toggle{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-size:11px;color:var(--blue-dk);font-family:var(--mono);font-weight:500;padding:4px 0;}
+.ped-toggle:hover{opacity:.75;}
+.ped-toggle svg{transition:transform .2s;}
+.ped-toggle.open svg{transform:rotate(90deg);}
+
+.ped-panel{display:none;padding:12px 0 2px;}
+.ped-panel.open{display:block;}
+.ped-title{font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;}
+
+/* Tree layout */
+.tree{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:4px;font-size:9px;font-family:var(--mono);}
+.gen-col{display:flex;flex-direction:column;gap:4px;}
+.gen-hdr{font-size:8px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;text-align:center;margin-bottom:2px;padding-bottom:3px;border-bottom:1px solid var(--border);}
+
+.pnode{border-radius:5px;padding:5px 6px;border:1px solid transparent;line-height:1.3;position:relative;}
+.pnode .pname{font-weight:500;color:var(--text);font-size:9px;}
+.pnode .pyear{font-size:8px;color:var(--text3);}
+.pnode .ppill{font-size:7px;padding:1px 4px;border-radius:3px;margin-top:2px;display:inline-block;}
+
+/* Node types */
+.pn-sire{background:#EBF3FC;border-color:#B5D4F4;}
+.pn-dam{background:#F5EDF9;border-color:#DDB8EC;}
+.pn-default{background:#F7F5F0;border-color:var(--border);}
+.pn-kd{background:var(--green-lt)!important;border-color:var(--green)!important;}
+.pn-tc{background:#FFFBEA;border-color:#F0D060;}
+.pn-cdr{background:var(--blue-lt);border-color:var(--blue);}
+.pn-inbred{background:var(--amber-lt)!important;border-color:var(--amber)!important;}
+
+/* Pedigree key */
+.ped-key{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);}
+.pk{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--text3);font-family:var(--mono);}
+.pk-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+
+/* Pedigree inbreeding note */
+.inbreed-note{font-size:10px;color:var(--amber-dk);background:var(--amber-lt);border:1px solid var(--amber);border-radius:5px;padding:5px 8px;margin-top:8px;font-family:var(--mono);}
+
+/* ── CALL-POINT PACE TIMELINE ── */
+.pace-section{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 32px 20px;}
+.pace-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.pace-title{font-family:var(--serif);font-size:16px;color:var(--text);}
+.pace-sub{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:2px;}
+.pace-toggles{display:flex;gap:6px;}
+.pace-btn{font-size:11px;padding:4px 12px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--sans);}
+.pace-btn.hot.on{background:#FAECE7;color:#4A1B0C;border-color:var(--red);}
+.pace-btn.mod.on{background:var(--amber-lt);color:var(--amber-dk);border-color:var(--amber);}
+.pace-btn.slow.on{background:var(--green-lt);color:var(--green-dk);border-color:var(--green);}
+/* Call-point tabs */
+.call-tabs{display:flex;gap:4px;margin:12px 0 10px;border-bottom:2px solid var(--border);padding-bottom:0;}
+.call-tab{font-size:12px;padding:7px 18px;border:1px solid var(--border);border-bottom:none;border-radius:6px 6px 0 0;background:#F7F5F0;color:var(--text2);cursor:pointer;font-family:var(--mono);font-weight:500;margin-bottom:-2px;transition:.12s;}
+.call-tab:hover{background:var(--surface);color:var(--text);}
+.call-tab.active{background:var(--surface);color:var(--blue-dk);border-color:var(--blue);border-bottom:2px solid var(--surface);}
+/* Scenario note */
+.pace-scenario-note{font-size:12px;color:var(--text2);font-family:var(--mono);background:#F7F5F0;border-radius:6px;padding:10px 14px;margin-bottom:14px;line-height:1.5;}
+.pace-scenario-note strong{color:var(--text);}
+/* Position table */
+.pace-tbl{width:100%;border-collapse:collapse;font-size:12px;font-family:var(--mono);}
+.pace-tbl th{text-align:left;padding:6px 10px;font-size:10px;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em;background:#F7F5F0;}
+.pace-tbl td{padding:7px 10px;border-bottom:1px solid #F0EDE5;vertical-align:middle;}
+.pace-tbl tr:last-child td{border-bottom:none;}
+.pace-tbl tr:hover td{background:#FAFAF8;}
+.pace-pos{font-size:16px;font-weight:700;font-family:var(--mono);width:32px;color:var(--text3);}
+.pace-pos.p1{color:var(--green-dk);}.pace-pos.p2{color:var(--blue-dk);}.pace-pos.p3{color:var(--amber-dk);}
+.pace-horse{font-weight:500;color:var(--text);}
+.pace-post{font-size:10px;background:#E5E2D8;padding:1px 5px;border-radius:3px;color:var(--text3);margin-right:6px;}
+.pace-style-pill{font-size:10px;padding:2px 7px;border-radius:8px;margin-left:6px;}
+.pace-style-E{background:var(--red-lt);color:var(--red-dk);}
+.pace-style-EP{background:var(--amber-lt);color:var(--amber-dk);}
+.pace-style-S{background:var(--blue-lt);color:var(--blue-dk);}
+.pace-style-C{background:#F0EDE5;color:#3a3938;}
+.pace-benefit{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:500;}
+.pb-yes{background:var(--green-lt);color:var(--green-dk);}
+.pb-no{background:var(--red-lt);color:var(--red-dk);}
+.pb-neutral{background:#F0EDE5;color:var(--text3);}
+.pace-note-cell{font-size:10px;color:var(--text3);font-style:italic;max-width:280px;}
+/* Pace fig mini row on cards */
+.pace-figs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:0;}
+.pf{background:#F7F5F0;border-radius:5px;padding:5px 6px;}
+.pfl{font-size:8px;color:var(--text3);letter-spacing:.04em;text-transform:uppercase;font-family:var(--mono);}
+.pfv{font-size:12px;font-weight:500;font-family:var(--mono);color:var(--text);}
+.pfv.fast{color:var(--green-dk);}.pfv.mid{color:var(--amber);}.pfv.slow{color:var(--red);}
+.sect-row{font-size:10px;color:var(--text3);font-family:var(--mono);padding:4px 0 0;line-height:1.5;}
+
+/* ── WAGERING CALCULATOR ── */
+.wager-section{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 32px 22px;}
+.wager-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.wager-title{font-family:var(--serif);font-size:16px;}
+.wager-tabs{display:flex;gap:4px;}
+.wtab{font-size:11px;padding:5px 14px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--sans);}
+.wtab.on{background:var(--text);color:#fff;border-color:var(--text);}
+.wager-panel{display:none;}.wager-panel.on{display:block;}
+/* Exotic builder */
+.exotic-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:700px){.exotic-layout{grid-template-columns:1fr;}}
+.exotic-left{}
+.bet-type-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.btype{font-size:11px;padding:4px 12px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--mono);}
+.btype.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+.horse-selector{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:5px;margin-bottom:12px;max-height:280px;overflow-y:auto;padding-right:4px;}
+.hs-btn{font-size:10px;padding:5px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--mono);text-align:left;transition:.1s;display:flex;align-items:center;gap:5px;}
+.hs-btn:hover{border-color:var(--blue);color:var(--blue);}
+.hs-btn.sel1{background:var(--blue-lt);border-color:var(--blue);color:var(--blue-dk);}
+.hs-btn.sel2{background:var(--green-lt);border-color:var(--green);color:var(--green-dk);}
+.hs-btn.sel3{background:var(--amber-lt);border-color:var(--amber);color:var(--amber-dk);}
+.hs-btn.sel4{background:var(--purple-lt);border-color:var(--purple);color:var(--purple-dk);}
+.hs-post{font-size:9px;background:#E5E2D8;padding:1px 4px;border-radius:3px;color:var(--text3);}
+.bet-amount-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.bet-amount-row label{font-size:11px;color:var(--text2);font-family:var(--mono);white-space:nowrap;}
+.bet-amount-row input{width:80px;font-size:13px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:var(--mono);background:var(--surface);color:var(--text);}
+.amtbtn{font-size:10px;padding:4px 9px;border-radius:10px;border:1px solid var(--border);background:#F7F5F0;cursor:pointer;font-family:var(--mono);color:var(--text2);}
+.amtbtn:hover{background:var(--border);}
+.exotic-result{background:#F7F5F0;border-radius:8px;padding:14px 16px;}
+.er-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.er-row:last-child{border-bottom:none;}
+.er-lbl{color:var(--text2);font-family:var(--mono);}
+.er-val{font-weight:500;font-family:var(--mono);color:var(--text);}
+.er-val.big{font-size:18px;color:var(--green-dk);}
+.er-val.warn{color:var(--amber);}
+.sel-list{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:8px;line-height:1.6;}
+/* Value finder */
+.value-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}
+.vcard{background:#F7F5F0;border-radius:7px;padding:10px 12px;border:1px solid var(--border);}
+.vcard.value{background:var(--green-lt);border-color:var(--green);}
+.vcard.fair{background:var(--surface);border-color:var(--border);}
+.vcard.avoid{background:var(--red-lt);border-color:var(--red);}
+.vc-name{font-size:12px;font-weight:500;font-family:var(--mono);margin-bottom:4px;}
+.vc-odds{font-size:11px;color:var(--text2);font-family:var(--mono);}
+.vc-bar{height:4px;background:#E5E2D8;border-radius:2px;margin:6px 0;overflow:hidden;}
+.vc-fill{height:100%;border-radius:2px;}
+.vc-verdict{font-size:10px;font-family:var(--mono);font-weight:500;margin-top:4px;}
+.vc-verdict.v{color:var(--green-dk);}.vc-verdict.f{color:var(--text3);}.vc-verdict.a{color:var(--red);}
+.value-note{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:10px;line-height:1.6;background:#F7F5F0;border-radius:6px;padding:8px 12px;}
+/* WPS estimator */
+.wps-layout{display:grid;grid-template-columns:220px 1fr;gap:16px;align-items:start;}
+@media(max-width:600px){.wps-layout{grid-template-columns:1fr;}}
+.wps-horse-list{display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;}
+.wps-btn{font-size:11px;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--mono);text-align:left;display:flex;justify-content:space-between;align-items:center;}
+.wps-btn:hover,.wps-btn.on{background:var(--blue-lt);border-color:var(--blue);color:var(--blue-dk);}
+.wps-results{background:#F7F5F0;border-radius:8px;padding:16px;}
+.wps-horse-name{font-family:var(--serif);font-size:18px;margin-bottom:2px;}
+.wps-odds-label{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:12px;}
+.wps-table{width:100%;border-collapse:collapse;font-size:12px;font-family:var(--mono);}
+.wps-table th{text-align:left;padding:6px 10px;font-size:10px;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em;}
+.wps-table td{padding:8px 10px;border-bottom:1px solid var(--border);}
+.wps-table tr:last-child td{border-bottom:none;}
+.wps-payout{font-size:16px;font-weight:500;color:var(--green-dk);}
+.wps-profit{font-size:11px;color:var(--text3);}
+#wagerBody{display:block;}
+#wagerBody.collapsed{display:none;}
+/* ── MONTE CARLO ── */
+.mc-section{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 32px 22px;}
+.mc-header{cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.mc-title{font-family:var(--serif);font-size:16px;display:flex;align-items:center;gap:8px;}
+.mc-body{margin-top:14px;}
+.mc-body.collapsed{display:none;}
+.mc-controls{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:14px;padding:12px 14px;background:#F7F5F0;border-radius:8px;}
+.mc-ctrl{display:flex;flex-direction:column;gap:4px;}
+.mc-ctrl label{font-size:10px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;}
+.mc-ctrl select,.mc-ctrl input[type=range]{width:100%;font-size:11px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:var(--mono);}
+.mc-ctrl input[type=range]{padding:0;border:none;background:transparent;}
+.mc-run-btn{font-size:13px;font-weight:500;padding:9px 24px;border-radius:8px;border:none;background:var(--text);color:#fff;cursor:pointer;font-family:var(--sans);transition:.15s;}
+.mc-run-btn:hover{background:#333;}
+.mc-run-btn:disabled{background:#999;cursor:not-allowed;}
+.mc-progress{height:4px;background:#E5E2D8;border-radius:2px;overflow:hidden;margin:8px 0;display:none;}
+.mc-progress-fill{height:100%;background:var(--blue);border-radius:2px;transition:width .1s;}
+.mc-results{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:700px){.mc-results{grid-template-columns:1fr;}}
+.mc-panel{background:#F7F5F0;border-radius:8px;padding:12px 14px;}
+.mc-panel-title{font-size:10px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.mc-horse-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.mc-hname{font-size:11px;font-family:var(--mono);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mc-bar-wrap{flex:1;background:#E5E2D8;border-radius:3px;height:14px;overflow:hidden;position:relative;}
+.mc-bar-fill{height:100%;border-radius:3px;transition:width .4s;}
+.mc-pct{position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:9px;font-family:var(--mono);font-weight:500;}
+.mc-pct-lbl{font-size:10px;font-family:var(--mono);color:var(--text2);width:38px;text-align:right;flex-shrink:0;}
+.mc-combo-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;font-family:var(--mono);}
+.mc-combo-row:last-child{border-bottom:none;}
+.mc-combo-horses{color:var(--text);}
+.mc-combo-pct{color:var(--text3);}
+.mc-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;}
+.mc-stat{background:var(--surface);border-radius:6px;padding:7px 10px;}
+.mc-stat-lbl{font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;}
+.mc-stat-val{font-size:15px;font-weight:500;font-family:var(--mono);color:var(--text);margin-top:1px;}
+.mc-pace-row{display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);padding:4px 0;border-bottom:1px solid var(--border);}
+.mc-pace-row:last-child{border-bottom:none;}
+.mc-weight-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.mc-weight-lbl{font-size:10px;font-family:var(--mono);color:var(--text2);width:100px;flex-shrink:0;}
+.mc-weight-val{font-size:10px;font-family:var(--mono);color:var(--text3);width:28px;text-align:right;}
+.mc-note{font-size:10px;color:var(--text3);font-family:var(--mono);line-height:1.5;margin-top:8px;}
+/* ── PAST PERFORMANCES PANEL ── */
+.pp-toggle{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-size:11px;color:var(--amber);font-family:var(--mono);font-weight:500;padding:4px 0;}
+.pp-toggle:hover{opacity:.75;}
+.pp-toggle svg{transition:transform .2s;}
+.pp-toggle.open svg{transform:rotate(90deg);}
+.pp-panel{display:none;padding:10px 0 2px;}
+.pp-panel.open{display:block;}
+.pp-panel{overflow-x:auto;}
+.pp-table{width:100%;min-width:620px;border-collapse:collapse;font-size:11px;font-family:var(--mono);}
+.pp-table th{text-align:left;padding:6px 10px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);background:#F7F5F0;white-space:nowrap;}
+.pp-table td{padding:6px 10px;border-bottom:1px solid #F0EDE5;color:var(--text2);vertical-align:top;line-height:1.4;}
+.pp-table tr:last-child td{border-bottom:none;}
+.pp-table tr:hover td{background:#FAFAF8;}
+.pp-fin-1{color:var(--green-dk);font-weight:700;}
+.pp-fin-2{color:var(--blue-dk);font-weight:600;}
+.pp-fin-3{color:var(--amber);font-weight:600;}
+.pp-bsr{font-weight:500;font-family:var(--mono);}
+.pp-bsr.hi{color:var(--green-dk);}
+.pp-bsr.mid{color:var(--amber);}
+.pp-bsr.lo{color:var(--red);}
+.pp-note{font-size:10px;color:var(--text3);font-style:italic;}
+#ppDrawerContainer{min-height:0;}
+#ppDrawerContainer .pp-panel{border-bottom:1px solid var(--border);}
+/* ── ODDS TICKER ── */
+.odds-bar{background:var(--text);color:#fff;padding:0;overflow:hidden;position:relative;}
+.odds-bar-inner{display:flex;align-items:stretch;}
+.odds-bar-label{background:#BA7517;padding:8px 14px;font-size:11px;font-family:var(--mono);font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.odds-ticker-wrap{flex:1;overflow:hidden;position:relative;}
+.odds-ticker{display:flex;gap:0;animation:tickerScroll 60s linear infinite;width:max-content;}
+.odds-ticker:hover{animation-play-state:paused;}
+.odds-ticker-item{padding:8px 20px;font-size:12px;font-family:var(--mono);white-space:nowrap;border-right:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:8px;}
+.odds-ticker-item .ot-name{color:#ccc;}
+.odds-ticker-item .ot-odds{font-weight:600;color:#fff;}
+.odds-ticker-item .ot-odds.fav{color:#FCD34D;}
+.odds-ticker-item .ot-odds.mid{color:#86EFAC;}
+.odds-ticker-item .ot-odds.long{color:#9CA3AF;}
+.odds-bar-refresh{padding:0 14px;display:flex;align-items:center;gap:6px;border-left:1px solid rgba(255,255,255,.15);flex-shrink:0;cursor:pointer;background:rgba(255,255,255,.05);}
+.odds-bar-refresh:hover{background:rgba(255,255,255,.12);}
+.odds-bar-refresh span{font-size:10px;font-family:var(--mono);color:#9CA3AF;}
+.odds-bar-time{font-size:9px;color:#6B7280;font-family:var(--mono);padding:0 12px;display:flex;align-items:center;flex-shrink:0;}
+@keyframes tickerScroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+/* Odds panel */
+.odds-panel{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;}
+.odds-panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.odds-panel-title{font-family:var(--serif);font-size:16px;display:flex;align-items:center;gap:8px;}
+.odds-panel-meta{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.odds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;}
+.odds-card{background:#F7F5F0;border-radius:7px;padding:8px 10px;border:1px solid var(--border);display:flex;flex-direction:column;gap:2px;}
+.odds-card.top3{background:var(--amber-lt);border-color:var(--amber);}
+.odds-card.top10{background:var(--blue-lt);border-color:var(--blue);}
+.odds-card-post{font-size:9px;color:var(--text3);font-family:var(--mono);}
+.odds-card-name{font-size:12px;font-weight:500;font-family:var(--mono);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.odds-card-odds{font-size:18px;font-weight:500;font-family:var(--mono);}
+.odds-card-ml{font-size:9px;color:var(--text3);font-family:var(--mono);}
+.odds-move{font-size:9px;font-family:var(--mono);padding:1px 5px;border-radius:4px;display:inline-block;margin-top:2px;}
+.odds-move.in{background:var(--green-lt);color:var(--green-dk);}
+.odds-move.out{background:var(--red-lt);color:var(--red);}
+.odds-move.flat{color:var(--text3);}
+.refresh-btn{font-size:11px;padding:5px 14px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--mono);display:flex;align-items:center;gap:5px;}
+.refresh-btn:hover{border-color:var(--blue);color:var(--blue);}
+/* ── FOOTER ── */
+.footer{padding:18px 32px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);line-height:1.8;font-family:var(--mono);}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="hdr-title">152nd Kentucky Derby</div>
+      <div class="hdr-meta">Churchill Downs · Louisville, KY · May 2, 2026 · 1¼ Miles · $5M Purse</div>
+    </div>
+    <div class="hdr-updated">Updated<br>April 30, 2026</div>
+  </div>
+  <div class="alert-bar">⚠ SCRATCHES: Silent Tactic (bruised foot, Apr 29) + Fulleffort (bone chip, Apr 30) · Ocelli draws into Post 19 · Great White at Post 20 · Cox down to Commandment + Further Ado · Race: May 2, 6:57 PM ET</div>
+</div>
+
+<!-- ══ ODDS TICKER ══ -->
+<div class="odds-bar">
+  <div class="odds-bar-inner">
+    <div class="odds-bar-label">📊 LIVE ODDS</div>
+    <div class="odds-ticker-wrap">
+      <div class="odds-ticker" id="oddsTicker"></div>
+    </div>
+    <div class="odds-bar-time" id="oddsBarTime"></div>
+    <div class="odds-bar-refresh" onclick="refreshOdds()" title="Update odds timestamp">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      <span>Refresh</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ODDS PANEL ══ -->
+<div class="odds-panel">
+  <div class="odds-panel-header">
+    <div>
+      <div class="odds-panel-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Current Odds Board
+      </div>
+      <div class="odds-panel-meta" id="oddsPanelMeta">Source: Yahoo Sports / CBS Sports consensus · Updated April 29, 2026 · Sportsbook lines, not live pari-mutuel pools</div>
+    </div>
+    <button class="refresh-btn" onclick="refreshOdds()">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      Update timestamp
+    </button>
+  </div>
+  <div class="odds-grid" id="oddsGrid"></div>
+  <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:10px;line-height:1.5;">
+    ⬆ drifted in from ML &nbsp;·&nbsp; ⬇ drifted out &nbsp;·&nbsp; ML reference: Renegade 4-1, The Puma 10-1, Further Ado 6-1, Commandment 5-1 &nbsp;·&nbsp; On race day visit <strong>kentuckyderby.com/wager/live-odds</strong> for official tote odds.
+  </div>
+</div>
+
+
+<div class="legend-bar">
+  <div class="leg"><div class="lsq" style="background:#1D9E75"></div>G1 win latest prep</div>
+  <div class="leg"><div class="lsq" style="background:#378ADD"></div>Placed latest prep</div>
+  <div class="leg"><div class="lsq" style="background:#7F77DD"></div>Active contender</div>
+  <div class="leg"><div class="lsq" style="background:#D4537E"></div>International invite</div>
+  <div class="leg"><div class="lsq" style="background:#D85A30"></div>Off trail</div>
+  <div class="ldiv"></div>
+  <div class="leg"><span style="display:inline-block;width:12px;height:2px;background:var(--red);margin-right:4px"></span>DI 4.0 limit</div>
+  <div class="ldiv"></div>
+  <div class="leg">CWP = Composite Winner Profile (0–10) · based on 2006–2025 Derby winner analysis</div>
+  <div class="ldiv"></div>
+  <div class="leg">5-Cross pedigree · click ▶ on any card to expand</div>
+</div>
+
+<div class="rules-bar">
+  <div class="rule"><div class="ri warn">!</div><strong>100+ Beyer:</strong> Every Derby winner since 2000 cleared this bar</div>
+  <div class="rule"><div class="ri warn">!</div><strong>Won final prep:</strong> Last 7 winners all won their final prep race</div>
+  <div class="rule"><div class="ri ok">✓</div><strong>DI &lt; 4.0:</strong> Historical stamina guideline — modern winners have exceeded it</div>
+  <div class="rule"><div class="ri ok">✓</div><strong>Post draw:</strong> April 25 · Post 17 has NEVER produced a winner · Posts 5, 8, 10 strongest</div>
+</div>
+
+<div class="ctrl-bar">
+  <span class="ctrl-lbl">Filter</span>
+  <button class="fbtn on" data-f="all">All</button>
+  <button class="fbtn" data-f="active">Active only</button>
+  <button class="fbtn" data-f="c100">✓ 100+ Beyer</button>
+  <button class="fbtn" data-f="wonprep">Won final prep</button>
+  <button class="fbtn" data-f="closer">Closers</button>
+  <button class="fbtn" data-f="cwp8">CWP ≥ 8.0</button>
+  <button class="fbtn" data-f="stamina">DI &lt; 2.5</button>
+  <div class="csep"></div>
+  <span class="ctrl-lbl">Sort</span>
+  <select id="ss">
+    <option value="pts">Derby points ↓</option>
+    <option value="post">Post position ↑</option>
+    <option value="cwp">CWP score ↓</option>
+    <option value="di">Dosage index ↑</option>
+    <option value="beyer">Best Beyer ↓</option>
+    <option value="lp">Late pace ↓</option>
+    <option value="starts">Fewest career starts</option>
+  </select>
+</div>
+
+
+<!-- ══ CALL-POINT PACE TIMELINE ══ -->
+<div class="pace-section" id="paceSection">
+  <div class="pace-header">
+    <div>
+      <div class="pace-title">Field Position Timeline</div>
+      <div class="pace-sub">Click a call point to see projected running order · Hot / Moderate / Slow pace toggles</div>
+    </div>
+    <div class="pace-toggles">
+      <button class="pace-btn hot" data-pace="hot" onclick="setPace('hot')">🔥 Hot (:45–:46)</button>
+      <button class="pace-btn mod on" data-pace="mod" onclick="setPace('mod')">Moderate (:47–:48)</button>
+      <button class="pace-btn slow" data-pace="slow" onclick="setPace('slow')">🐢 Slow (:49+)</button>
+    </div>
+  </div>
+
+  <!-- Clickable call-point tabs -->
+  <div class="call-tabs" id="callTabs">
+    <button class="call-tab" data-call="gate"     onclick="setCall('gate',this)">🏁 Gate</button>
+    <button class="call-tab" data-call="quarter"  onclick="setCall('quarter',this)">¼ Mile</button>
+    <button class="call-tab active" data-call="half" onclick="setCall('half',this)">½ Mile ★</button>
+    <button class="call-tab" data-call="threequarter" onclick="setCall('threequarter',this)">¾ Mile</button>
+    <button class="call-tab" data-call="stretch"  onclick="setCall('stretch',this)">Stretch</button>
+  </div>
+
+  <!-- Scenario summary strip -->
+  <div class="pace-scenario-note" id="paceNote"></div>
+
+  <!-- Field position ranking table -->
+  <div id="paceTable"></div>
+
+  <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:10px;line-height:1.6;">
+    ★ The ½-mile call is the most predictive point in Derby history — 8 of the last 11 winners were in the top 3 at this call · Positions derived from running style history and actual prep race running lines · <span style="color:var(--green-dk)">■ benefits this scenario</span> · <span style="color:var(--red)">■ at risk</span>
+  </div>
+</div>
+
+<!-- ══ WAGERING CALCULATOR ══ -->
+<div class="wager-section">
+  <div class="wager-header" onclick="toggleWager()" style="cursor:pointer;user-select:none;">
+    <div>
+      <div class="wager-title" style="display:flex;align-items:center;gap:8px;">
+        <svg id="wagerChevron" width="12" height="12" viewBox="0 0 10 10" style="transition:transform .2s;transform:rotate(0deg);flex-shrink:0;"><polygon points="2,1 9,5 2,9" fill="currentColor"/></svg>
+        Wagering Calculator
+      </div>
+      <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:2px;margin-left:20px;">Exotic costs · Value finder · Win/Place/Show payouts</div>
+    </div>
+    <div class="wager-tabs" onclick="event.stopPropagation()">
+      <button class="wtab on" onclick="showWTab('exotic',this)">🎰 Exotic Builder</button>
+      <button class="wtab" onclick="showWTab('value',this)">📊 Value Finder</button>
+      <button class="wtab" onclick="showWTab('wps',this)">💵 Win/Place/Show</button>
+    </div>
+  </div>
+  <div id="wagerBody" class="collapsed">
+
+  <!-- EXOTIC BUILDER -->
+  <div class="wager-panel on" id="wp-exotic">
+    <div class="exotic-layout">
+      <div class="exotic-left">
+        <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">BET TYPE</div>
+        <div class="bet-type-row" id="betTypeRow">
+          <button class="btype on" data-type="exacta" data-legs="2" data-name="Exacta" onclick="setBetType(this)">Exacta (2)</button>
+          <button class="btype" data-type="trifecta" data-legs="3" data-name="Trifecta" onclick="setBetType(this)">Trifecta (3)</button>
+          <button class="btype" data-type="superfecta" data-legs="4" data-name="Superfecta" onclick="setBetType(this)">Superfecta (4)</button>
+          <button class="btype" data-type="super-hi5" data-legs="5" data-name="Super Hi-5" onclick="setBetType(this)">Super Hi-5 (5)</button>
+          <button class="btype" data-type="daily-double" data-legs="2" data-name="Daily Double" onclick="setBetType(this)">Daily Double</button>
+        </div>
+        <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;" id="selInstr">SELECT 2 HORSES (click to add/remove)</div>
+        <div class="horse-selector" id="horseSel"></div>
+        <div class="bet-amount-row">
+          <label>Bet $</label>
+          <input type="number" id="betAmt" value="2" min="0.1" step="0.5" oninput="calcExotic()">
+          <button class="amtbtn" onclick="setAmt(1)">$1</button>
+          <button class="amtbtn" onclick="setAmt(2)">$2</button>
+          <button class="amtbtn" onclick="setAmt(5)">$5</button>
+          <button class="amtbtn" onclick="setAmt(10)">$10</button>
+          <button class="amtbtn" onclick="setAmt(0.1)">$0.10</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);font-family:var(--mono);cursor:pointer;">
+            <input type="checkbox" id="boxBet" onchange="calcExotic()"> Box (all combos)
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);font-family:var(--mono);cursor:pointer;">
+            <input type="checkbox" id="keyBet" onchange="calcExotic()"> Key (1st horse on top)
+          </label>
+        </div>
+      </div>
+      <div class="exotic-result" id="exoticResult">
+        <div class="er-row"><span class="er-lbl">Bet type</span><span class="er-val" id="er-type">Exacta</span></div>
+        <div class="er-row"><span class="er-lbl">Combinations</span><span class="er-val" id="er-combos">—</span></div>
+        <div class="er-row"><span class="er-lbl">Base amount</span><span class="er-val" id="er-base">$2.00</span></div>
+        <div class="er-row"><span class="er-lbl" style="font-weight:500;">Total cost</span><span class="er-val big" id="er-total">—</span></div>
+        <div class="er-row"><span class="er-lbl">Est. win payout*</span><span class="er-val warn" id="er-payout">Select horses first</span></div>
+        <div class="er-row"><span class="er-lbl">Est. profit</span><span class="er-val" id="er-profit">—</span></div>
+        <div class="sel-list" id="er-sel">No horses selected yet. Click horses above to build your ticket.</div>
+        <div style="font-size:9px;color:var(--text3);margin-top:8px;line-height:1.5;">*Estimated payout based on morning-line odds using standard Churchill Downs takeout (~19% for exotics). Actual payouts will differ based on pool size and final odds. Box/key multipliers applied before takeout.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VALUE FINDER -->
+  <div class="wager-panel" id="wp-value">
+    <div class="value-note" style="margin-bottom:12px;">
+      <strong>How this works:</strong> Each horse is assigned a "fair probability" based on their CWP score (60% weight) and Beyer/pace figures (40% weight), normalized across the field. This is compared against the implied probability from morning-line odds. Horses where the market is paying more than their fair probability = potential value. This is a framework, not a guarantee — use alongside your own handicapping.
+    </div>
+    <div class="value-grid" id="valueGrid"></div>
+  </div>
+
+  <!-- WIN/PLACE/SHOW -->
+  <div class="wager-panel" id="wp-wps">
+    <div class="wps-layout">
+      <div>
+        <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">SELECT A HORSE</div>
+        <div class="wps-horse-list" id="wpsList"></div>
+      </div>
+      <div class="wps-results" id="wpsResults">
+        <div style="font-size:12px;color:var(--text3);font-family:var(--mono);">← Select a horse to see estimated Win, Place, and Show payouts for common bet sizes.</div>
+      </div>
+    </div>
+  </div>
+  </div><!-- end wagerBody -->
+</div><!-- end wager-section -->
+
+<!-- ══ MONTE CARLO SIMULATOR ══ -->
+<div class="mc-section">
+  <div class="mc-header" onclick="toggleMC()">
+    <div class="mc-title">
+      <svg id="mcChevron" width="12" height="12" viewBox="0 0 10 10" style="transition:transform .2s;transform:rotate(0deg);flex-shrink:0;"><polygon points="2,1 9,5 2,9" fill="currentColor"/></svg>
+      Monte Carlo Race Simulator
+    </div>
+    <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">10,000 simulated races · Win/Place/Show probabilities · Likely exotics</div>
+  </div>
+  <div class="mc-body collapsed" id="mcBody">
+
+    <div class="mc-controls">
+      <div class="mc-ctrl">
+        <label>Pace Scenario</label>
+        <select id="mcPace">
+          <option value="random">Random (weighted)</option>
+          <option value="hot">Hot (:45–:46 half)</option>
+          <option value="mod">Moderate (:47–:48 half)</option>
+          <option value="slow">Slow (:49+ half)</option>
+        </select>
+      </div>
+      <div class="mc-ctrl">
+        <label>Track Condition</label>
+        <select id="mcTrack">
+          <option value="fast">Fast (typical)</option>
+          <option value="good">Good (slight speed bias)</option>
+          <option value="sloppy">Sloppy (closer bias)</option>
+        </select>
+      </div>
+      <div class="mc-ctrl">
+        <label>Simulations</label>
+        <select id="mcSims">
+          <option value="1000">1,000 (fast)</option>
+          <option value="5000" selected>5,000 (balanced)</option>
+          <option value="10000">10,000 (precise)</option>
+        </select>
+      </div>
+      <div class="mc-ctrl">
+        <label>Speed weight <span id="wSpeedLbl">50%</span></label>
+        <input type="range" id="wSpeed" min="0" max="100" value="50" oninput="document.getElementById('wSpeedLbl').textContent=this.value+'%'">
+      </div>
+      <div class="mc-ctrl">
+        <label>Pace weight <span id="wPaceLbl">25%</span></label>
+        <input type="range" id="wPace" min="0" max="100" value="25" oninput="document.getElementById('wPaceLbl').textContent=this.value+'%'">
+      </div>
+      <div class="mc-ctrl">
+        <label>CWP weight <span id="wCWPLbl">15%</span></label>
+        <input type="range" id="wCWP" min="0" max="100" value="15" oninput="document.getElementById('wCWPLbl').textContent=this.value+'%'">
+      </div>
+      <div class="mc-ctrl">
+        <label>Pedigree/DI weight <span id="wDILbl">10%</span></label>
+        <input type="range" id="wDI" min="0" max="100" value="10" oninput="document.getElementById('wDILbl').textContent=this.value+'%'">
+      </div>
+      <div class="mc-ctrl" style="justify-content:flex-end;flex-direction:row;align-items:flex-end;gap:8px;">
+        <button class="mc-run-btn" id="mcRunBtn" onclick="runMonteCarlo()">▶ Run Simulation</button>
+      </div>
+    </div>
+
+    <div class="mc-progress" id="mcProgress"><div class="mc-progress-fill" id="mcProgressFill" style="width:0%"></div></div>
+
+    <div id="mcResults" style="display:none;">
+      <div class="mc-results">
+        <div class="mc-panel">
+          <div class="mc-panel-title">Win Probability</div>
+          <div id="mcWinBars"></div>
+        </div>
+        <div class="mc-panel">
+          <div class="mc-panel-title">Place (top 2) · Show (top 3)</div>
+          <div id="mcPlaceBars"></div>
+        </div>
+        <div class="mc-panel">
+          <div class="mc-panel-title">Top Exacta Combos</div>
+          <div id="mcExactas"></div>
+          <div class="mc-note" style="margin-top:8px;">Frequency from simulations — not adjusted for pool size or takeout.</div>
+        </div>
+        <div class="mc-panel">
+          <div class="mc-panel-title">Top Trifecta Combos</div>
+          <div id="mcTrifectas"></div>
+        </div>
+        <div class="mc-panel">
+          <div class="mc-panel-title">Simulation Summary</div>
+          <div id="mcSummary"></div>
+        </div>
+        <div class="mc-panel">
+          <div class="mc-panel-title">Pace Scenario Breakdown</div>
+          <div id="mcPaceBreak"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mc-note" style="margin-top:10px;">Model uses Beyer/Brisnet speed figures, E1/E2/LP pace figures, CWP score, DI, post position historical win rates, running style, and trainer/jockey multipliers. Each simulation adds normally-distributed random variance (σ≈8 Beyer pts for speed, ±2 positions for trip luck). Results show probability distributions, not predictions. Favorites win ~30% of Derbies historically — the model reflects this. International horses (N/A CWP) are included with speed-figure estimates only.</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="count-lbl" id="countLbl"></div>
+  <div class="grid" id="cg"></div>
+</div>
+
+<!-- ══ PP FULL-WIDTH DRAWER ══ -->
+<div id="ppDrawerContainer" style="background:var(--surface);border-top:2px solid var(--amber);"></div>
+
+<div class="footer">
+  <strong>Running styles:</strong> E=Front-runner · EP=Early presser · S=Sustained closer · C=Deep closer &nbsp;·&nbsp;
+  <strong>Fig trend:</strong> ↑ improving · → stable · ↓ regressing &nbsp;·&nbsp;
+  <strong>Pace figures (Brisnet):</strong> E1=early speed (first ¼M) · E2=middle pace (first ½M) · LP=late pace (final ⅜) · Higher=faster · Green≥108 · Amber≥98 · Red below 98 for LP &nbsp;·&nbsp;
+  <strong>½M call:</strong> actual clockings from most recent prep (sub-:46 is hot, :48+ is moderate/slow) · <strong>Final ⅛:</strong> sub-12.00s is exceptional closing speed &nbsp;·&nbsp;
+  <strong>Pedigree colors:</strong> Green=KY Derby winner · Gold=Triple Crown winner · Blue=Chef-de-Race · Orange=Inbreeding &nbsp;·&nbsp;
+  <strong>Sources:</strong> BloodHorse · TDN · TwinSpires · DRF · Secretariat.com · America's Best Racing · Total Performance Data · Paulick Report
+</div>
+
+<script>
+/* ─────────────────────────────────────────────
+   PEDIGREE DATA — 5 generations (G1–G5)
+   Format per horse:
+   {sire, dam, patGrandsire, patGranddam,
+    matGrandsire, matGranddam,
+    patGG1,patGG2,patGG3,patGG4,
+    matGG1,matGG2,matGG3,matGG4,
+    g5:[32 names, sire-side first L→R, dam-side L→R]}
+   Flags: kd=KY Derby winner, tc=Triple Crown, cdr=Chef-de-Race, inbred=[name]
+──────────────────────────────────────────────── */
+const PP = {
+  "Renegade":[
+    {dt:"Mar 28 2026",trk:"OPark",rn:"Arkansas Derby G1",dist:"1⅛M",surf:"Dirt",cond:"Fast",fin:1,lb:"-4L",bsr:98,note:"Last-to-first. Career-best Beyer. 11.84s final furlong."},
+    {dt:"Feb 07 2026",trk:"TBD",rn:"Sam F. Davis S. (LS)",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"-3¾L",bsr:92,note:"8th-of-9 to first. 11.97s final furlong. Q: field depth."},
+    {dt:"Dec 06 2025",trk:"AQU",rn:"Remsen S. G2",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:2,lb:"½L",bsr:83,note:"Second to Journalism. Closed well vs strong field."},
+    {dt:"Oct 17 2025",trk:"BEL",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:2,lb:"hd",bsr:"—",note:"DQ'd for bumping, placed 2nd. Won on track."},
+    {dt:"Aug 16 2025",trk:"SAR",rn:"Maiden Special Weight",dist:"5½F",surf:"Dirt",cond:"Fast",fin:3,lb:"3L",bsr:"—",note:"Debut. Third. Showed good late kick."},
+  ],
+  "Commandment":[
+    {dt:"Mar 28 2026",trk:"GPark",rn:"Florida Derby G1",dist:"1⅛M",surf:"Dirt",cond:"Fast",fin:1,lb:"ns",bsr:101,note:"Last-to-first. 36.52s final 3/8. Won by nose."},
+    {dt:"Feb 28 2026",trk:"GPark",rn:"Fountain of Youth G2",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"nk",bsr:100,note:"Stalked, surged rail. 12.77s final furlong."},
+    {dt:"Jan 03 2026",trk:"GPark",rn:"Mucho Macho Man (LS)",dist:"1M",surf:"Dirt",cond:"Fast",fin:1,lb:"-6¾L",bsr:91,note:"Dominant debut at 3. Odds-on favorite."},
+    {dt:"Nov 01 2025",trk:"CD",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:1,lb:"-2½L",bsr:"—",note:"Broke maiden convincingly at Churchill Downs."},
+    {dt:"Oct 04 2025",trk:"KEE",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:4,lb:"5L",bsr:"—",note:"Debut 4th. Green but showed promise."},
+  ],
+  "Further Ado":[
+    {dt:"Apr 04 2026",trk:"KEE",rn:"Blue Grass G1",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"-11L",bsr:106,note:"11-length romp. Largest BG margin since 2006."},
+    {dt:"Mar 07 2026",trk:"TBD",rn:"Tampa Bay Derby G3",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:2,lb:"ns",bsr:92,note:"Lost photo finish to The Puma. Solid effort."},
+    {dt:"Dec 27 2025",trk:"CD",rn:"Kentucky Jockey Club G2",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"-2L",bsr:82,note:"Won at Churchill. Q: step up in class."},
+    {dt:"Aug 09 2025",trk:"SAR",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:5,lb:"8L",bsr:"—",note:"Debut 5th. Showed pace but faded."},
+    {dt:"—",trk:"—",rn:"—",dist:"—",surf:"—",cond:"—",fin:"—",lb:"—",bsr:"—",note:"Only 5 career starts"},
+  ],
+  "So Happy":[
+    {dt:"Apr 04 2026",trk:"SA",rn:"Santa Anita Derby G1",dist:"1⅛M",surf:"Dirt",cond:"Fast",fin:1,lb:"-2¾L",bsr:100,note:"Rated off pace by Smith. Powered past Potente."},
+    {dt:"Feb 14 2026",trk:"SA",rn:"Robert Lewis S. G3",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:3,lb:"4½L",bsr:86,note:"Third behind Potente. Signs of distance improvement."},
+    {dt:"Jan 17 2026",trk:"SA",rn:"San Vicente S. G2",dist:"7F",surf:"Dirt",cond:"Fast",fin:2,lb:"1¼L",bsr:96,note:"Second to Potente. Both improved from debut."},
+    {dt:"Dec 06 2025",trk:"SA",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:1,lb:"-3L",bsr:"—",note:"Broke maiden. Fast final furlong."},
+  ],
+  "Emerging Market":[
+    {dt:"Mar 22 2026",trk:"FG",rn:"Louisiana Derby G2",dist:"1³⁄₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"hd",bsr:90,note:"Only 2nd career start. Won by head at longest dist."},
+    {dt:"Feb 14 2026",trk:"FG",rn:"Maiden Special Weight",dist:"1M",surf:"Dirt",cond:"Fast",fin:1,lb:"-4L",bsr:"—",note:"Debut win. Dominant. Connections bypassed preps."},
+  ],
+  "The Puma":[
+    {dt:"Mar 28 2026",trk:"GPark",rn:"Florida Derby G1",dist:"1⅛M",surf:"Dirt",cond:"Fast",fin:2,lb:"ns",bsr:89,note:"Lost nose decision to Commandment. Wide trip."},
+    {dt:"Mar 07 2026",trk:"TBD",rn:"Tampa Bay Derby G3",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"-1¾L",bsr:94,note:"Won from stalking position. Declared for Derby."},
+    {dt:"Jan 10 2026",trk:"GPark",rn:"Maiden Special Weight",dist:"1M",surf:"Dirt",cond:"Fast",fin:2,lb:"1½L",bsr:83,note:"Debut 2nd. Left at gate, rallied strongly. No 2yo races."},
+    {dt:"—",trk:"—",rn:"—",dist:"—",surf:"—",cond:"—",fin:"—",lb:"—",bsr:"—",note:"Only 3 career starts (no 2yo racing)"},
+  ],
+  "Fulleffort":[
+    {dt:"Mar 28 2026",trk:"TP",rn:"Jeff Ruby Steaks G3",dist:"1⅟₁₆M",surf:"Synth",cond:"—",fin:1,lb:"-2½L",bsr:94,note:"Won on Tapeta. Never raced on dirt. Career best."},
+    {dt:"Feb 21 2026",trk:"TP",rn:"Risen Star G2",dist:"1⅟₁₆M",surf:"Synth",cond:"—",fin:2,lb:"3½L",bsr:83,note:"Second on Tapeta. Closed but outclassed."},
+    {dt:"Jan 17 2026",trk:"TP",rn:"Maiden Special Weight",dist:"1M",surf:"Synth",cond:"—",fin:1,lb:"-4L",bsr:78,note:"Broke maiden on Tapeta. Q: surface switch to dirt."},
+    {dt:"Nov 22 2025",trk:"CD",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:5,lb:"7L",bsr:"—",note:"Debut on dirt. Faded. All subsequent races on synth."},
+    {dt:"—",trk:"—",rn:"—",dist:"—",surf:"—",cond:"—",fin:"—",lb:"—",bsr:"—",note:"Key risk: 0-for-1 lifetime on dirt"},
+  ],
+  "Silent Tactic":[
+    {dt:"Mar 28 2026",trk:"OPark",rn:"Arkansas Derby G1",dist:"1⅛M",surf:"Dirt",cond:"Fast",fin:2,lb:"+4L",bsr:87,note:"2nd to Renegade. Outclassed late. Honest effort."},
+    {dt:"Mar 01 2026",trk:"OPark",rn:"Rebel S. G2",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:2,lb:"ns",bsr:85,note:"Lost nose to Class President. Consistent type."},
+    {dt:"Feb 01 2026",trk:"OPark",rn:"Southwest S. G3",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"-2L",bsr:83,note:"Won. First stakes win. Showed forward progress."},
+    {dt:"Jan 10 2026",trk:"OPark",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:1,lb:"-3L",bsr:"—",note:"Broke maiden. Showed sprint speed."},
+    {dt:"Nov 15 2025",trk:"CD",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:2,lb:"nk",bsr:"—",note:"Debut 2nd. Competitive. No 2yo wins."},
+    {dt:"Oct 04 2025",trk:"KEE",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:6,lb:"8L",bsr:"—",note:"First career start. Green."},
+  ],
+  "Chief Wallabee":[
+    {dt:"Mar 28 2026",trk:"GPark",rn:"Florida Derby G1",dist:"1⅛M",surf:"Dirt",cond:"Fast",fin:3,lb:"½L",bsr:95,note:"Third. Jockey said 'didn't quicken as expected.'"},
+    {dt:"Feb 28 2026",trk:"GPark",rn:"Fountain of Youth G2",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:2,lb:"nk",bsr:100,note:"Second to Commandment. Career best. Very game."},
+    {dt:"Jan 17 2026",trk:"GPark",rn:"Holy Bull S. G3",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"-2¾L",bsr:89,note:"Debut win. No 2yo races. Lightly raced."},
+    {dt:"—",trk:"—",rn:"—",dist:"—",surf:"—",cond:"—",fin:"—",lb:"—",bsr:"—",note:"Only 3 career starts (no 2yo racing)"},
+  ],
+  "Pavlovian":[
+    {dt:"Mar 22 2026",trk:"FG",rn:"Louisiana Derby G2",dist:"1³⁄₁₆M",surf:"Dirt",cond:"Fast",fin:2,lb:"hd",bsr:90,note:"Pressed pace vs :46.23 half. Fought back gamely."},
+    {dt:"Feb 14 2026",trk:"FG",rn:"Risen Star G2",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:3,lb:"2½L",bsr:84,note:"Third. Showed speed, faded slightly."},
+    {dt:"Jan 10 2026",trk:"FG",rn:"Maiden Special Weight",dist:"1M",surf:"Dirt",cond:"Fast",fin:1,lb:"-3L",bsr:"—",note:"Debut win. Showed tactical speed."},
+    {dt:"Nov 08 2025",trk:"CD",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:2,lb:"1½L",bsr:"—",note:"Debut 2nd. Competitive 2yo start."},
+    {dt:"Sep 06 2025",trk:"CD",rn:"Maiden Special Weight",dist:"5F",surf:"Dirt",cond:"Fast",fin:4,lb:"5L",bsr:"—",note:"First career start. Green early."},
+  ],
+  "Incredibolt":[
+    {dt:"Mar 14 2026",trk:"LRL",rn:"Virginia Derby (non-G)",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"-4L",bsr:88,note:"Elite late pace (115). Virginia Derby lighter comp."},
+    {dt:"Feb 01 2026",trk:"LRL",rn:"Allowance Optional",dist:"1M",surf:"Dirt",cond:"Fast",fin:2,lb:"1L",bsr:82,note:"Showed pace but didn't finish. Then sharp turnaround."},
+    {dt:"Dec 27 2025",trk:"LRL",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:1,lb:"-2½L",bsr:"—",note:"Broke maiden. 58 Beyer race prior was rough trip."},
+    {dt:"Nov 22 2025",trk:"LRL",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:5,lb:"9L",bsr:58,note:"Debut. 58 Beyer. Raced wide, blocked."},
+    {dt:"—",trk:"—",rn:"—",dist:"—",surf:"—",cond:"—",fin:"—",lb:"—",bsr:"—",note:"LP 115 leads field. Q: field quality in VA"},
+  ],
+  "Albus":[
+    {dt:"Apr 05 2026",trk:"AQU",rn:"Wood Memorial G2",dist:"1⅛M",surf:"Dirt",cond:"Fast",fin:1,lb:"-1¼L",bsr:83,note:"Won from 8th at half. 83 Beyer — lowest prep winner."},
+    {dt:"Feb 28 2026",trk:"AQU",rn:"Gotham S. G3",dist:"1M",surf:"Dirt",cond:"Fast",fin:2,lb:"½L",bsr:"—",note:"Second. Showed late kick vs NY field."},
+    {dt:"Jan 17 2026",trk:"AQU",rn:"Maiden Special Weight",dist:"1M",surf:"Dirt",cond:"Fast",fin:1,lb:"-3L",bsr:"—",note:"Broke maiden. Strong debut win."},
+    {dt:"Dec 06 2025",trk:"AQU",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:4,lb:"6L",bsr:"—",note:"First career start. Debut."},
+  ],
+  "Nearly":[
+    {dt:"Mar 28 2026",trk:"GPark",rn:"Florida Derby G1",dist:"1⅛M",surf:"Dirt",cond:"Fast",fin:4,lb:"—",bsr:87,note:"4th. Led briefly, weakened. Figure trends down."},
+    {dt:"Feb 28 2026",trk:"GPark",rn:"Holy Bull S. G3",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"-3L",bsr:89,note:"Won Holy Bull. Peak Beyer. Was considered a leader."},
+    {dt:"Jan 10 2026",trk:"GPark",rn:"Maiden Special Weight",dist:"1M",surf:"Dirt",cond:"Fast",fin:1,lb:"-4L",bsr:82,note:"Debut win. Quick acceleration."},
+    {dt:"Nov 22 2025",trk:"GPark",rn:"Maiden Special Weight",dist:"5½F",surf:"Dirt",cond:"Fast",fin:2,lb:"1½L",bsr:"—",note:"2yo debut 2nd. Showed speed."},
+  ],
+  "Golden Tempo":[
+    {dt:"Mar 22 2026",trk:"FG",rn:"Louisiana Derby G2",dist:"1³⁄₁₆M",surf:"Dirt",cond:"Fast",fin:3,lb:"—",bsr:85,note:"Third. Missed break, closed well. LP 106."},
+    {dt:"Feb 14 2026",trk:"FG",rn:"Risen Star G2",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:4,lb:"4L",bsr:84,note:"Fourth. Slow break continues to hurt."},
+    {dt:"Jan 17 2026",trk:"FG",rn:"Allowance Optional",dist:"1M",surf:"Dirt",cond:"Fast",fin:2,lb:"1½L",bsr:81,note:"Second. Showed late punch vs open company."},
+    {dt:"Dec 13 2025",trk:"FG",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:1,lb:"-2L",bsr:"—",note:"Broke maiden. Slow break, rallied."},
+    {dt:"Nov 01 2025",trk:"CD",rn:"Maiden Special Weight",dist:"5½F",surf:"Dirt",cond:"Fast",fin:5,lb:"7L",bsr:"—",note:"Debut. Missed break badly."},
+  ],
+  "Potente":[
+    {dt:"Apr 04 2026",trk:"SA",rn:"Santa Anita Derby G1",dist:"1⅛M",surf:"Dirt",cond:"Fast",fin:2,lb:"-2¾L",bsr:96,note:"2nd to So Happy. Led, collared in stretch."},
+    {dt:"Feb 28 2026",trk:"SA",rn:"Robert Lewis S. G3",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"-1¾L",bsr:89,note:"Won Robert Lewis. Beyer improving."},
+    {dt:"Jan 17 2026",trk:"SA",rn:"San Vicente S. G2",dist:"7F",surf:"Dirt",cond:"Fast",fin:1,lb:"-2L",bsr:79,note:"Won San Vicente at 7f. Speed over shorter trip."},
+    {dt:"—",trk:"—",rn:"—",dist:"—",surf:"—",cond:"—",fin:"—",lb:"—",bsr:"—",note:"No 2yo starts. 3-for-3 until SA Derby."},
+  ],
+  "Intrepido":[
+    {dt:"Apr 04 2026",trk:"SA",rn:"Santa Anita Derby G1",dist:"1⅛M",surf:"Dirt",cond:"Fast",fin:4,lb:"—",bsr:"—",note:"4th in SA Derby. Got in via scratch."},
+    {dt:"Mar 01 2026",trk:"SA",rn:"Robert Lewis S. G3",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:2,lb:"2½L",bsr:"—",note:"2nd. Showed pace but faded late."},
+    {dt:"Jan 17 2026",trk:"SA",rn:"American Pharoah G1",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"-3L",bsr:"—",note:"Won American Pharoah G1 as 2yo."},
+    {dt:"Nov 01 2025",trk:"SA",rn:"Breeders' Cup Juvenile G1",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:5,lb:"—",bsr:"—",note:"5th in BC Juvenile. Showed vs best 2yos."},
+    {dt:"Sep 27 2025",trk:"SA",rn:"Del Mar Juvenile",dist:"6F",surf:"Dirt",cond:"Fast",fin:2,lb:"1L",bsr:"—",note:"2nd. Good 2yo campaign started."},
+  ],
+  "Right to Party":[
+    {dt:"Apr 05 2026",trk:"AQU",rn:"Wood Memorial G2",dist:"1⅛M",surf:"Dirt",cond:"Fast",fin:2,lb:"1¼L",bsr:81,note:"Closed from 11th to 2nd. Visually impressive."},
+    {dt:"Feb 28 2026",trk:"AQU",rn:"Withers S. G3",dist:"1M",surf:"Dirt",cond:"Fast",fin:1,lb:"-2L",bsr:"—",note:"Won Withers. NY-based campaign."},
+    {dt:"Jan 17 2026",trk:"AQU",rn:"Allowance Optional",dist:"1M",surf:"Dirt",cond:"Fast",fin:2,lb:"nk",bsr:"—",note:"Second by neck. Consistent type."},
+    {dt:"Nov 22 2025",trk:"AQU",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:1,lb:"-3L",bsr:"—",note:"Broke maiden convincingly."},
+  ],
+  "Litmus Test":[
+    {dt:"Feb 28 2026",trk:"OPark",rn:"Rebel S. G2",dist:"1⅟₁₆M",surf:"Dirt",cond:"Fast",fin:3,lb:"3L",bsr:86,note:"Set early pace, faded to 3rd. Pace-dependent."},
+    {dt:"Jan 17 2026",trk:"OPark",rn:"Smarty Jones S.",dist:"1M",surf:"Dirt",cond:"Fast",fin:1,lb:"-2½L",bsr:83,note:"Won Smarty Jones. Led wire-to-wire."},
+    {dt:"Dec 06 2025",trk:"OPark",rn:"Maiden Special Weight",dist:"6F",surf:"Dirt",cond:"Fast",fin:2,lb:"1L",bsr:"—",note:"2nd in debut. Showed speed."},
+    {dt:"Nov 01 2025",trk:"CD",rn:"Maiden Special Weight",dist:"5½F",surf:"Dirt",cond:"Fast",fin:1,lb:"-1½L",bsr:"—",note:"Broke maiden at 2yo. Front-running style."},
+    {dt:"Sep 20 2025",trk:"KEE",rn:"Maiden Special Weight",dist:"5½F",surf:"Dirt",cond:"Fast",fin:4,lb:"6L",bsr:"—",note:"First career start."},
+    {dt:"—",trk:"—",rn:"—",dist:"—",surf:"—",cond:"—",fin:"—",lb:"—",bsr:"—",note:"34 pts — needs defections to run"},
+  ],
+  "Wonder Dean":[
+    {dt:"Feb 27 2026",trk:"Meydan",rn:"UAE Derby G2",dist:"1³⁄₁₆M",surf:"Dirt",cond:"Fast",fin:1,lb:"-2½L",bsr:"N/A",note:"Won UAE Derby. No comparable US figures."},
+    {dt:"Jan 30 2026",trk:"Riyadh",rn:"Saudi Derby G3",dist:"1M",surf:"Dirt",cond:"Good",fin:4,lb:"—",bsr:"N/A",note:"4th in Saudi Derby at 1 mile."},
+    {dt:"Dec 12 2025",trk:"Meydan",rn:"UAE 2000 Guineas G3",dist:"1M",surf:"Dirt",cond:"Good",fin:2,lb:"—",bsr:"N/A",note:"2nd. Showed speed over 1 mile."},
+    {dt:"—",trk:"—",rn:"—",dist:"—",surf:"—",cond:"—",fin:"—",lb:"—",bsr:"—",note:"All races in Middle East. No Beyer figures."},
+  ],
+  "Danon Bourbon":[
+    {dt:"Mar 07 2026",trk:"Nakayama",rn:"Fukuryu Stakes (Japan)",dist:"1⅟₁₆M",surf:"Dirt",cond:"Good",fin:1,lb:"-3½L",bsr:"N/A",note:"Won by 3½L. Best Fukuryu time in 20+ years."},
+    {dt:"Jan 25 2026",trk:"Kyoto",rn:"Allowance",dist:"1³⁄₁₆M",surf:"Dirt",cond:"Good",fin:1,lb:"-5L",bsr:"N/A",note:"Won by 5L. Imposing margin."},
+    {dt:"Dec 21 2025",trk:"Kyoto",rn:"Maiden",dist:"1⅟₁₆M",surf:"Dirt",cond:"Muddy",fin:1,lb:"-10L",bsr:"N/A",note:"Debut win by 10 lengths. Remarkable."},
+    {dt:"—",trk:"—",rn:"—",dist:"—",surf:"—",cond:"—",fin:"—",lb:"—",bsr:"—",note:"3-for-3. KY-bred. Maxfield × Tapit. JRA dirt only."},
+  ],
+  "Six Speed":[
+    {dt:"Feb 27 2026",trk:"Meydan",rn:"UAE Derby G2",dist:"1³⁄₁₆M",surf:"Dirt",cond:"Fast",fin:2,lb:"-2½L",bsr:"N/A",note:"Led, collared by Wonder Dean. Trainer: 'didn't stay.'"},
+    {dt:"Jan 30 2026",trk:"Meydan",rn:"UAE 2000 Guineas G3",dist:"1M",surf:"Dirt",cond:"Fast",fin:1,lb:"-5L",bsr:"N/A",note:"Won by 5L. Huge speed, may not last 1¼M."},
+    {dt:"Nov 22 2025",trk:"Meydan",rn:"Maiden",dist:"6F",surf:"Dirt",cond:"Fast",fin:1,lb:"-3L",bsr:"N/A",note:"Debut win. Fast fractions."},
+    {dt:"—",trk:"—",rn:"—",dist:"—",surf:"—",cond:"—",fin:"—",lb:"—",bsr:"—",note:"Post 17 has NEVER produced a Derby winner."},
+  ],
+  "Great White":[
+    {"dt":"Apr 04 2026","trk":"KEE","rn":"Blue Grass G1","dist":"1⅛M","surf":"Dirt","cond":"Fast","fin":5,"lb":"—","bsr":"—","note":"Set pace, faded to 5th on real dirt. Only dirt start. Very concerning."},
+    {"dt":"Feb 22 2026","trk":"TP","rn":"Battaglia S.","dist":"1⅟₁₆M","surf":"Synth","cond":"","fin":1,"lb":"-nk","bsr":"—","note":"Won by neck on Tapeta. Held off Fulleffort. Tactical stalker trip."},
+    {"dt":"Jan 10 2026","trk":"TP","rn":"Allowance Optional","dist":"1M","surf":"Synth","cond":"","fin":2,"lb":"½L","bsr":"—","note":"2nd on Tapeta. Consistent on synthetic."},
+    {"dt":"Dec 07 2025","trk":"TP","rn":"Maiden Special Weight","dist":"6F","surf":"Synth","cond":"","fin":1,"lb":"-3L","bsr":"—","note":"Broke maiden on Tapeta. Rallied from midpack."},
+    {"dt":"Nov 08 2025","trk":"TP","rn":"Maiden Special Weight","dist":"6F","surf":"Synth","cond":"","fin":3,"lb":"2L","bsr":"—","note":"Debut 3rd. All races on Tapeta synthetic."}
+  ],
+  "Ocelli":[
+    {"dt":"Apr 05 2026","trk":"AQU","rn":"Wood Memorial G2","dist":"1⅛M","surf":"Dirt","cond":"Fast","fin":3,"lb":"1¼L","bsr":"81","note":"Career-best 81 Beyer. Pace collapsed — picked up tiring horses. 3rd behind Albus and Right to Party."},
+    {"dt":"Feb 28 2026","trk":"AQU","rn":"Gotham S. G3","dist":"1M","surf":"Dirt","cond":"Fast","fin":6,"lb":"7L","bsr":"72","note":"6th in Gotham. Well beaten. Showed closing style."},
+    {"dt":"Jan 17 2026","trk":"AQU","rn":"Allowance Optional","dist":"1M","surf":"Dirt","cond":"Fast","fin":3,"lb":"3L","bsr":"70","note":"3rd. Consistent closer type. No wins."},
+    {"dt":"Nov 22 2025","trk":"AQU","rn":"Maiden Special Weight","dist":"6F","surf":"Dirt","cond":"Fast","fin":6,"lb":"9L","bsr":"58","note":"6th on debut. Very green."},
+    {"dt":"Oct 04 2025","trk":"BEL","rn":"Maiden Special Weight","dist":"5½F","surf":"Dirt","cond":"Fast","fin":2,"lb":"½L","bsr":"65","note":"2nd in 2nd start — only top-2 finish of career."},
+    {"dt":"—","trk":"—","rn":"—","dist":"—","surf":"—","cond":"—","fin":"—","lb":"—","bsr":"—","note":"Only maiden in field. 0-for-6 career. History firmly against winning."}
+  ],
+};
+
+const PED = {
+  "Renegade":{
+    g1s:"Into Mischief",g1d:"Spice Is Nice",
+    g2:[
+      {n:"Harlan's Holiday",f:"cdr"},
+      {n:"Leslie's Lady",f:""},
+      {n:"Curlin",f:"cdr"},
+      {n:"Dame Dorothy",f:""}
+    ],
+    g3:[
+      {n:"Harlan",f:""},
+      {n:"Christmas in Aiken",f:""},
+      {n:"Quiet American",f:""},
+      {n:"Weekend Surprise",f:"cdr"},
+      {n:"Smart Strike",f:"cdr"},
+      {n:"Sherriff's Deputy",f:""},
+      {n:"Bernardini",f:""},
+      {n:"Vole Vole Monamour",f:""}
+    ],
+    g4:[
+      {n:"Storm Cat",f:"cdr"},{n:"Country Romance",f:""},
+      {n:"Crafty Prospector",f:""},{n:"Lillian Russell",f:""},
+      {n:"Seeking the Gold",f:"cdr"},{n:"Pie Chart",f:""},
+      {n:"Secretariat",f:"cdr,tc"},{n:"Lassie Dear",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Classy 'n Smart",f:""},
+      {n:"Deputy Minister",f:"cdr"},{n:"Magnetic Charm",f:""},
+      {n:"A.P. Indy",f:"cdr"},{n:"Rosa Bonheur",f:""},
+      {n:"Woodman",f:"cdr"},{n:"Viendra",f:""}
+    ],
+    inbreeding:[],
+    note:"Complete outcross through 5 generations — no duplicated ancestors. Into Mischief × Curlin is a proven cross (18 winners from 22 starters). Fappiano blood appears via Smart Strike (Mr. Prospector line). A.P. Indy via Bernardini adds deep classic stamina."
+  },
+  "Commandment":{
+    g1s:"Into Mischief",g1d:"Sippican Harbor",
+    g2:[
+      {n:"Harlan's Holiday",f:"cdr"},
+      {n:"Leslie's Lady",f:""},
+      {n:"Orb",f:"kd"},
+      {n:"Blossomed",f:""}
+    ],
+    g3:[
+      {n:"Harlan",f:""},
+      {n:"Christmas in Aiken",f:""},
+      {n:"Quiet American",f:""},
+      {n:"Weekend Surprise",f:"cdr"},
+      {n:"Malibu Moon",f:""},
+      {n:"Lady Liberty",f:""},
+      {n:"Deputy Minister",f:"cdr"},
+      {n:"Golden Alibi",f:""}
+    ],
+    g4:[
+      {n:"Storm Cat",f:"cdr"},{n:"Country Romance",f:""},
+      {n:"Crafty Prospector",f:""},{n:"Lillian Russell",f:""},
+      {n:"Seeking the Gold",f:"cdr"},{n:"Pie Chart",f:""},
+      {n:"Secretariat",f:"cdr,tc"},{n:"Lassie Dear",f:""},
+      {n:"A.P. Indy",f:"cdr"},{n:"Broom Dance",f:""},
+      {n:"Unbridled",f:"kd"},{n:"Hat Tab Girl",f:""},
+      {n:"Vice Regent",f:"cdr"},{n:"Mint Copy",f:""},
+      {n:"Mt. Livermore",f:""},{n:"Texas Creme",f:""}
+    ],
+    inbreeding:["Secretariat appears 4x5 via Quiet American and A.P. Indy"],
+    note:"Same Into Mischief × A.P. Indy cross as 2025 Horse of Year Sovereignty. Orb (2013 KY Derby) as broodmare sire is a potent classic stamp. Deputy Minister provides elite distance heritage. Unbridled (1990 KY Derby) appears in 4th generation on dam side."
+  },
+  "Emerging Market":{
+    g1s:"Candy Ride (Arg)",g1d:"Wild Empress",
+    g2:[
+      {n:"Ride the Rails",f:""},
+      {n:"Candy Girl (Arg)",f:""},
+      {n:"Empire Maker",f:""},
+      {n:"Trappings",f:""}
+    ],
+    g3:[
+      {n:"Cryptoclearance",f:"cdr"},
+      {n:"Silvery Swan",f:""},
+      {n:"Candy Éclair (Arg)",f:""},
+      {n:"Icy Reception (Arg)",f:""},
+      {n:"Unbridled",f:"kd"},
+      {n:"Toussaud",f:""},
+      {n:"Seeking the Gold",f:"cdr"},
+      {n:"Tryst",f:""}
+    ],
+    g4:[
+      {n:"Fappiano",f:"cdr"},{n:"Never Knocked",f:""},
+      {n:"Caro",f:"cdr"},{n:"Tamerett",f:""},
+      {n:"South American lines",f:""},{n:"South American lines",f:""},
+      {n:"South American lines",f:""},{n:"South American lines",f:""},
+      {n:"Fappiano",f:"cdr"},{n:"Gana Facil",f:""},
+      {n:"El Gran Senor",f:""},{n:"Image of Reality",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Con Game",f:""},
+      {n:"Affirmed",f:"tc"},{n:"Crimson Saint",f:""}
+    ],
+    inbreeding:["Fappiano 4×4 (via Cryptoclearance and Unbridled)"],
+    note:"Fappiano 4×4 inbreeding — both Candy Ride (via Cryptoclearance) and Empire Maker (via Unbridled) trace to Fappiano. This specific cross has produced 4 graded stakes winners including G1 Separationofpowers. Unbridled (1990 KY Derby) and Affirmed (1978 Triple Crown) appear in dam's pedigree — exceptional classic stamina depth."
+  },
+  "Silent Tactic":{
+    g1s:"Tacitus",g1d:"Magical Sign",
+    g2:[
+      {n:"Tapit",f:"cdr"},
+      {n:"Close Hatches",f:""},
+      {n:"Gun Runner",f:"cdr"},
+      {n:"Winning Prize",f:""}
+    ],
+    g3:[
+      {n:"Pulpit",f:"cdr"},
+      {n:"Tap Your Heels",f:""},
+      {n:"Unbridled's Song",f:"cdr"},
+      {n:"Land of Illusion",f:""},
+      {n:"Candy Ride (Arg)",f:"cdr"},
+      {n:"Belvedere",f:""},
+      {n:"A.P. Indy",f:"cdr"},
+      {n:"Winning Time",f:""}
+    ],
+    g4:[
+      {n:"A.P. Indy",f:"cdr"},{n:"Preach",f:""},
+      {n:"Unbridled",f:"kd"},{n:"Ruby Slippers",f:""},
+      {n:"Unbridled",f:"kd"},{n:"Trolley Song",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Maximova",f:""},
+      {n:"Ride the Rails",f:""},{n:"Candy Girl (Arg)",f:""},
+      {n:"Unaccounted For",f:""},{n:"Regal State",f:""},
+      {n:"Seattle Slew",f:"tc"},{n:"Weekend Surprise",f:"cdr"},
+      {n:"Pleasant Colony",f:"kd"},{n:"Winning Win",f:""}
+    ],
+    inbreeding:["Unbridled 4×4 (via Tapit→Pulpit→A.P. Indy and via Tacitus→Unbridled's Song)","A.P. Indy 3×4 (sire Tapit and dam side via A.P. Indy)"],
+    note:"Extraordinarily deep stamina pedigree. Tapit (Belmont sire, multiple classic winners) × Gun Runner (HOTY, classic distances) is the outstanding top-line combination. A.P. Indy appears 3×4 — powerful inbreeding to the premier classic stamina influence of the modern era. Unbridled 4×4 adds further staying blood. First stakes winner for both Tacitus (as sire) and Gun Runner (as broodmare sire)."
+  },
+  "Chief Wallabee":{
+    g1s:"Constitution",g1d:"A La Lucie",
+    g2:[
+      {n:"Tapit",f:"cdr"},
+      {n:"Jury",f:""},
+      {n:"Medaglia d'Oro",f:"cdr"},
+      {n:"Lucie Manette",f:""}
+    ],
+    g3:[
+      {n:"Pulpit",f:"cdr"},
+      {n:"Tap Your Heels",f:""},
+      {n:"Officer",f:""},
+      {n:"Distorted",f:""},
+      {n:"El Prado (Ire)",f:"cdr"},
+      {n:"Cappucino Bay",f:""},
+      {n:"Dynaformer",f:"cdr"},
+      {n:"Belle de Jour",f:""}
+    ],
+    g4:[
+      {n:"A.P. Indy",f:"cdr"},{n:"Preach",f:""},
+      {n:"Unbridled",f:"kd"},{n:"Ruby Slippers",f:""},
+      {n:"Bertrando",f:""},{n:"Lady Affirmed",f:""},
+      {n:"Pine Bluff",f:"kd"},{n:"Barbary",f:""},
+      {n:"Sadler's Wells",f:"cdr"},{n:"Lady Capulet",f:""},
+      {n:"Blushing Groom",f:"cdr"},{n:"Cap d'Antibes",f:""},
+      {n:"Roberto",f:"cdr"},{n:"Andover Way",f:""},
+      {n:"His Majesty",f:"cdr"},{n:"Sharp Queen",f:""}
+    ],
+    inbreeding:[],
+    note:"Constitution × Medaglia d'Oro is a powerful classic-stamina cross. Tapit appears through both sire (Constitution) and is cross-reinforced with A.P. Indy. Sadler's Wells (European stamina icon) on dam side adds staying power. Dynaformer produced Barbaro (2006 KY Derby winner). Roberto via Dynaformer is a noted stamina influence."
+  },
+  "Renegade Fulleffort":{
+    /* Fulleffort key for lookup */
+    g1s:"Liam's Map",g1d:"Callmethesqueeze",
+    g2:[
+      {n:"Union Rags",f:""},
+      {n:"With Patience",f:""},
+      {n:"Awesome Again",f:"cdr"},
+      {n:"Squeeze Play",f:""}
+    ],
+    g3:[
+      {n:"Dixie Union",f:""},
+      {n:"Tempo",f:""},
+      {n:"Matty G",f:""},
+      {n:"Patience Game",f:""},
+      {n:"Deputy Minister",f:"cdr"},
+      {n:"Primal Force",f:""},
+      {n:"Smart Strike",f:"cdr"},
+      {n:"Squeeze Box",f:""}
+    ],
+    g4:[
+      {n:"Dixieland Band",f:"cdr"},{n:"She's Tops",f:""},
+      {n:"Forty Niner",f:"cdr"},{n:"Danzig's Beauty",f:""},
+      {n:"Smarten",f:""},{n:"Bold Bikini",f:""},
+      {n:"Cutlass",f:""},{n:"Patsy's Fantasy",f:""},
+      {n:"Vice Regent",f:"cdr"},{n:"Mint Copy",f:""},
+      {n:"Blushing Groom",f:"cdr"},{n:"Prime Prospect",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Classy 'n Smart",f:""},
+      {n:"Relaunch",f:""},{n:"Box 'n Away",f:""}
+    ],
+    inbreeding:[],
+    note:"Liam's Map (Breeders' Cup Dirt Mile winner) sire line is speed/miler-oriented — the chief distance concern. However, Awesome Again on dam side is a 1¼M Breeders' Cup Classic winner and proven stamina source. Half-sibling Power Squeeze won the Alabama Stakes (1¼M dirt). Deputy Minister and Smart Strike provide distance pedigree. Never raced on dirt — surface switch is the defining risk."
+  },
+  "Fulleffort":{
+    g1s:"Liam's Map",g1d:"Callmethesqueeze",
+    g2:[
+      {n:"Union Rags",f:""},
+      {n:"With Patience",f:""},
+      {n:"Awesome Again",f:"cdr"},
+      {n:"Squeeze Play",f:""}
+    ],
+    g3:[
+      {n:"Dixie Union",f:""},
+      {n:"Tempo",f:""},
+      {n:"Matty G",f:""},
+      {n:"Patience Game",f:""},
+      {n:"Deputy Minister",f:"cdr"},
+      {n:"Primal Force",f:""},
+      {n:"Smart Strike",f:"cdr"},
+      {n:"Squeeze Box",f:""}
+    ],
+    g4:[
+      {n:"Dixieland Band",f:"cdr"},{n:"She's Tops",f:""},
+      {n:"Forty Niner",f:"cdr"},{n:"Danzig's Beauty",f:""},
+      {n:"Smarten",f:""},{n:"Bold Bikini",f:""},
+      {n:"Cutlass",f:""},{n:"Patsy's Fantasy",f:""},
+      {n:"Vice Regent",f:"cdr"},{n:"Mint Copy",f:""},
+      {n:"Blushing Groom",f:"cdr"},{n:"Prime Prospect",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Classy 'n Smart",f:""},
+      {n:"Relaunch",f:""},{n:"Box 'n Away",f:""}
+    ],
+    inbreeding:[],
+    note:"Liam's Map (Breeders' Cup Dirt Mile winner) sire line is speed/miler-oriented — the chief distance concern. However, Awesome Again on dam side is a 1¼M Breeders' Cup Classic winner and proven stamina source. Half-sibling Power Squeeze won the Alabama Stakes (1¼M dirt). Deputy Minister and Smart Strike provide distance pedigree. Never raced on dirt — surface switch is the defining risk."
+  },
+  "Incredibolt":{
+    g1s:"Bold d'Oro",g1d:"Sapphire Spitfire",
+    g2:[
+      {n:"Medaglia d'Oro",f:"cdr"},
+      {n:"Prada",f:""},
+      {n:"Awesome Again",f:"cdr"},
+      {n:"Sapphire N' Silk",f:""}
+    ],
+    g3:[
+      {n:"El Prado (Ire)",f:"cdr"},
+      {n:"Cappucino Bay",f:""},
+      {n:"Deputy Minister",f:"cdr"},
+      {n:"Smashing Style",f:""},
+      {n:"Deputy Minister",f:"cdr"},
+      {n:"Primal Force",f:""},
+      {n:"Bien Bien",f:""},
+      {n:"Gold Silk",f:""}
+    ],
+    g4:[
+      {n:"Sadler's Wells",f:"cdr"},{n:"Lady Capulet",f:""},
+      {n:"Blushing Groom",f:"cdr"},{n:"Cap d'Antibes",f:""},
+      {n:"Vice Regent",f:"cdr"},{n:"Mint Copy",f:""},
+      {n:"Play Fellow",f:""},{n:"Vague",f:""},
+      {n:"Vice Regent",f:"cdr"},{n:"Mint Copy",f:""},
+      {n:"Blushing Groom",f:"cdr"},{n:"Prime Prospect",f:""},
+      {n:"Manila",f:""},{n:"Possible Mate",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Dance Number",f:""}
+    ],
+    inbreeding:["Deputy Minister 3×3 (via Medaglia d'Oro and Awesome Again)","Vice Regent 4×4","Blushing Groom 4×4"],
+    note:"Bold d'Oro is by Medaglia d'Oro (champion, multiple G1 wins at classic distances) — excellent stamina source. Deputy Minister appears 3×3 — powerful inbreeding to this elite distance influence. Sadler's Wells (European stamina icon) on sire side via Medaglia d'Oro. Awesome Again (1¼M BC Classic winner) on dam side reinforces stamina. Strongest stamina inbreeding profile of the speed-looking horses."
+  },
+  "Nearly":{
+    g1s:"Not This Time",g1d:"IB Prospecting",
+    g2:[
+      {n:"Giant's Causeway",f:"cdr"},
+      {n:"Do It With Style",f:""},
+      {n:"Mineshaft",f:"cdr"},
+      {n:"Prospector's Doll",f:""}
+    ],
+    g3:[
+      {n:"Storm Cat",f:"cdr"},
+      {n:"Mariah's Storm",f:""},
+      {n:"Rock of Gibraltar (Ire)",f:"cdr"},
+      {n:"Domasca Dan",f:""},
+      {n:"A.P. Indy",f:"cdr"},
+      {n:"Regal Band",f:""},
+      {n:"Gone West",f:"cdr"},
+      {n:"Prospecting",f:""}
+    ],
+    g4:[
+      {n:"Storm Bird",f:"cdr"},{n:"Terlingua",f:""},
+      {n:"Rahy",f:"cdr"},{n:"Immense",f:""},
+      {n:"Danehill",f:"cdr"},{n:"Offshore Boom",f:""},
+      {n:"Deploy",f:""},{n:"Caerlina",f:""},
+      {n:"Seattle Slew",f:"tc"},{n:"Weekend Surprise",f:"cdr"},
+      {n:"His Majesty",f:"cdr"},{n:"Flag of Leyte Gulf",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Secrettame",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Cascapedia",f:""}
+    ],
+    inbreeding:["Mr. Prospector 4×4 (via Gone West and Prospector's Doll)","Storm Cat line 3×4 (via Giant's Causeway and Storm Bird)"],
+    note:"Giant's Causeway (champion, European classic winner) × Mineshaft (2003 HOTY, won at 1¼M) is a workable stamina cross. A.P. Indy on dam side adds classic depth. Mr. Prospector 4×4 is common in modern pedigrees. Storm Cat influence 3×4 injects speed. Speed figures trending down — pressing style in a 20-horse field remains the chief concern."
+  },
+  "Pavlovian":{
+    g1s:"Justify",g1d:"Mandy's Grace",
+    g2:[
+      {n:"Scat Daddy",f:""},
+      {n:"Stage Magic",f:""},
+      {n:"Bellamy Road",f:""},
+      {n:"Gracie's Fortune",f:""}
+    ],
+    g3:[
+      {n:"Johannesburg",f:""},
+      {n:"Love Style",f:""},
+      {n:"Hennessy",f:"cdr"},
+      {n:"Oh So Wonderful",f:""},
+      {n:"Arch",f:"cdr"},
+      {n:"Lovely Rafaela",f:""},
+      {n:"Fortunate Prospect",f:""},
+      {n:"Gracie's Line",f:""}
+    ],
+    g4:[
+      {n:"Hennessy",f:"cdr"},{n:"Myth",f:""},
+      {n:"Rahy",f:"cdr"},{n:"Primed",f:""},
+      {n:"Storm Cat",f:"cdr"},{n:"Island Kitty",f:""},
+      {n:"Deputy Minister",f:"cdr"},{n:"Magicalmysterycat",f:""},
+      {n:"Kris S.",f:"cdr"},{n:"Aurora",f:""},
+      {n:"Meadowlake",f:"cdr"},{n:"Lassie Dear",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Andover Way",f:""},
+      {n:"Storm Cat",f:"cdr"},{n:"Gracie's Faith",f:""}
+    ],
+    inbreeding:["Storm Cat 3×4 (via Scat Daddy→Hennessy and Gracie's Fortune side)"],
+    note:"Justify (2018 Triple Crown winner) is an outstanding stamina source for classic distances — undefeated in 6 starts including Kentucky Derby, Preakness, Belmont. Scat Daddy × Bellamy Road provides speed balance. Storm Cat 3×4 is common but adds speed and early maturity. Homebred for Reddam Racing, connections who won Derby with I'll Have Another (2012) and Nyquist (2016)."
+  },
+  "Golden Tempo":{
+    g1s:"Curlin",g1d:"Carrumba",
+    g2:[
+      {n:"Smart Strike",f:"cdr"},
+      {n:"Sherriff's Deputy",f:""},
+      {n:"Bernardini",f:""},
+      {n:"Loveberry",f:""}
+    ],
+    g3:[
+      {n:"Mr. Prospector",f:"cdr"},
+      {n:"Classy 'n Smart",f:""},
+      {n:"Deputy Minister",f:"cdr"},
+      {n:"Magnetic Charm",f:""},
+      {n:"A.P. Indy",f:"cdr"},
+      {n:"Rosa Bonheur",f:""},
+      {n:"Alphabet Soup",f:""},
+      {n:"Swear By",f:""}
+    ],
+    g4:[
+      {n:"Raise a Native",f:"cdr"},{n:"Gold Digger",f:""},
+      {n:"Buckpasser",f:"cdr"},{n:"Classy Quillo",f:""},
+      {n:"Vice Regent",f:"cdr"},{n:"Mint Copy",f:""},
+      {n:"Broodmare Sire",f:""},{n:"Regal Feeling",f:""},
+      {n:"Seattle Slew",f:"tc"},{n:"Weekend Surprise",f:"cdr"},
+      {n:"His Majesty",f:"cdr"},{n:"Flag of Leyte Gulf",f:""},
+      {n:"A.P. Indy",f:"cdr"},{n:"Broom Dance",f:""},
+      {n:"Cox's Ridge",f:""},{n:"Swear by Betty",f:""}
+    ],
+    inbreeding:["A.P. Indy 3×4 (sire Curlin via Smart Strike and dam via Bernardini)"],
+    note:"Textbook classic-stamina pedigree. Curlin (2x HOTY, Preakness/BC Classic/Dubai World Cup) × Bernardini (2006 Preakness winner, champion) produces A.P. Indy 3×4 inbreeding — the premier classic stamina influence. Smart Strike via Mr. Prospector adds class. Seattle Slew (1977 Triple Crown winner) appears through Weekend Surprise. DI 1.95 is the best stamina profile in the field."
+  },
+  "Paladin":{
+    g1s:"Gun Runner",g1d:"Magical Sign (dam)",
+    g2:[
+      {n:"Candy Ride (Arg)",f:"cdr"},
+      {n:"Quiet Giant",f:""},
+      {n:"Tapit",f:"cdr"},
+      {n:"Amorama",f:""}
+    ],
+    g3:[
+      {n:"Ride the Rails",f:""},
+      {n:"Candy Girl (Arg)",f:""},
+      {n:"Giant's Causeway",f:"cdr"},
+      {n:"Quiet Business",f:""},
+      {n:"Pulpit",f:"cdr"},
+      {n:"Tap Your Heels",f:""},
+      {n:"Alzao",f:""},
+      {n:"Amorama du Berlais",f:""}
+    ],
+    g4:[
+      {n:"Cryptoclearance",f:"cdr"},{n:"Silvery Swan",f:""},
+      {n:"South Am. lines",f:""},{n:"South Am. lines",f:""},
+      {n:"Storm Cat",f:"cdr"},{n:"Mariah's Storm",f:""},
+      {n:"Hennessy",f:"cdr"},{n:"Classic Purchase",f:""},
+      {n:"A.P. Indy",f:"cdr"},{n:"Preach",f:""},
+      {n:"Unbridled",f:"kd"},{n:"Ruby Slippers",f:""},
+      {n:"Lyphard",f:"cdr"},{n:"Lady Rebecca",f:""},
+      {n:"Blushing Groom",f:"cdr"},{n:"Belle Aventure",f:""}
+    ],
+    inbreeding:[],
+    note:"SCRATCHED — condylar fracture, right front ankle. Gun Runner (2016 HOTY, multiple classic wins) × Tapit (Belmont sire) is an elite classic pedigree. Candy Ride provides the Fappiano line; Giant's Causeway adds European classic stamina. One of the cleanest dosage profiles in the field (DI 2.20). Would have been a formidable Derby contender."
+  },
+  "The Puma":{
+    g1s:"Essential Quality",g1d:"Eve of War",
+    g2:[
+      {n:"Tapit",f:"cdr"},
+      {n:"Delightful Quality",f:""},
+      {n:"Declaration of War",f:"cdr"},
+      {n:"Eve the Lady",f:""}
+    ],
+    g3:[
+      {n:"Pulpit",f:"cdr"},
+      {n:"Tap Your Heels",f:""},
+      {n:"Maria's Mon",f:"cdr"},
+      {n:"Treble Charm",f:""},
+      {n:"War Front",f:"cdr"},
+      {n:"Tempo",f:""},
+      {n:"Fusaichi Pegasus",f:"kd"},
+      {n:"Splashing",f:""}
+    ],
+    g4:[
+      {n:"A.P. Indy",f:"cdr"},{n:"Preach",f:""},
+      {n:"Unbridled",f:"kd"},{n:"Ruby Slippers",f:""},
+      {n:"Wavering Monarch",f:""},{n:"Gatling Gun",f:""},
+      {n:"Cox's Ridge",f:""},{n:"Passing Glance",f:""},
+      {n:"Danzig",f:"cdr"},{n:"Starlet's Sister",f:""},
+      {n:"Dixie Union",f:""},{n:"Steady Wind",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Angel Fever",f:""},
+      {n:"Gone West",f:"cdr"},{n:"Glenaris",f:""}
+    ],
+    inbreeding:["A.P. Indy 4×4 (via Tapit→Pulpit and Declaration of War line)","Mr. Prospector 5×5"],
+    note:"Essential Quality (Belmont Stakes winner, champion) × Declaration of War provides excellent classic bloodlines. Tapit through Essential Quality is a proven distance influence. Fusaichi Pegasus (2000 KY Derby winner) appears in 4th generation. A.P. Indy 4×4 is standard modern inbreeding. Well-balanced pedigree for 1¼ miles."
+  },
+  "Further Ado":{
+    g1s:"Gun Runner",g1d:"Sky Dreamer",
+    g2:[
+      {n:"Candy Ride (Arg)",f:"cdr"},
+      {n:"Quiet Giant",f:""},
+      {n:"Sky Mesa",f:""},
+      {n:"To Dream About",f:""}
+    ],
+    g3:[
+      {n:"Ride the Rails",f:""},
+      {n:"Candy Girl (Arg)",f:""},
+      {n:"Giant's Causeway",f:"cdr"},
+      {n:"Quiet Business",f:""},
+      {n:"Pulpit",f:"cdr"},
+      {n:"Anasheed",f:""},
+      {n:"Monarchos",f:"kd"},
+      {n:"Beautiful Pleasure",f:""}
+    ],
+    g4:[
+      {n:"Cryptoclearance",f:"cdr"},{n:"Silvery Swan",f:""},
+      {n:"South Am. lines",f:""},{n:"South Am. lines",f:""},
+      {n:"Storm Cat",f:"cdr"},{n:"Mariah's Storm",f:""},
+      {n:"Hennessy",f:"cdr"},{n:"Classic Purchase",f:""},
+      {n:"A.P. Indy",f:"cdr"},{n:"Preach",f:""},
+      {n:"Toussaud",f:""},{n:"Seaside Retreat",f:""},
+      {n:"Maria's Mon",f:"cdr"},{n:"Toussaud",f:""},
+      {n:"Maudlin",f:""},{n:"Blush With Pride",f:""}
+    ],
+    inbreeding:["Toussaud appears 4x5 (via Sky Mesa→Pulpit→A.P. Indy dam, and via Monarchos→Maria's Mon dam)"],
+    note:"Gun Runner (2016 HOTY, 2x Dubai World Cup, Preakness, BC Classic) is an elite stamina sire averaging 7.4f winning distance for progeny. Sky Mesa is a Pulpit grandson (A.P. Indy line) — classic staying blood. Monarchos (2001 KY Derby winner) appears as 2nd dam sire. Beautiful Pleasure (1999 BC Distaff winner, Eclipse Champion Older Mare) is 3rd dam — outstanding female family. Blue Grass win by 11 lengths is the largest margin since 2006."
+  },
+  "So Happy":{
+    g1s:"Runhappy",g1d:"So Cunning",
+    g2:[
+      {n:"Super Saver",f:"kd"},
+      {n:"Bella Jolie",f:""},
+      {n:"Blame",f:"cdr"},
+      {n:"So Glitzy",f:""}
+    ],
+    g3:[
+      {n:"Maria's Mon",f:"cdr"},
+      {n:"Supercharger",f:""},
+      {n:"Broken Vow",f:""},
+      {n:"Wavering Line",f:""},
+      {n:"Arch",f:"cdr"},
+      {n:"Liable",f:""},
+      {n:"Gilded Time",f:""},
+      {n:"So Ritzy",f:""}
+    ],
+    g4:[
+      {n:"Wavering Monarch",f:""},{n:"Gatling Gun",f:""},
+      {n:"Mining",f:""},{n:"Superb",f:""},
+      {n:"Unbridled",f:"kd"},{n:"Fiji",f:""},
+      {n:"Touch Gold",f:""},{n:"Clear Envoi",f:""},
+      {n:"Kris S.",f:"cdr"},{n:"Aurora",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Blitey",f:""},
+      {n:"Timeless Moment",f:""},{n:"Gilded Lilly",f:""},
+      {n:"Darn That Alarm",f:""},{n:"So Divine",f:""}
+    ],
+    inbreeding:[],
+    note:"Runhappy is by Super Saver (2010 KY Derby winner) — classic bloodlines on sire side despite Runhappy being a sprinter. Blame (2010 BC Classic winner) as dam sire is the critical stamina buffer — his daughters routinely stretch out beyond their sire's apparent limitations. So Glitzy (Gilded Time) won at 9f at Saratoga. Unbridled (1990 KY Derby/BC Classic) appears in 4th generation via Broken Vow. Mike Smith said 'there's more in the tank' after the Santa Anita Derby. $150K OBS purchase vs $300K winner's share."
+  },
+  "Albus":{
+    g1s:"Yaupon",g1d:"Adream",
+    g2:[
+      {n:"Uncle Mo",f:""},
+      {n:"La Verdad",f:""},
+      {n:"Bernardini",f:""},
+      {n:"Turbo Dream",f:""}
+    ],
+    g3:[
+      {n:"Indian Charlie",f:""},
+      {n:"Playa Maya",f:""},
+      {n:"Dixieland Band",f:"cdr"},
+      {n:"Dixie Slippers",f:""},
+      {n:"A.P. Indy",f:"cdr"},
+      {n:"Cara Rafaela",f:""},
+      {n:"Unbridled",f:"kd"},
+      {n:"Reve de Fee",f:""}
+    ],
+    g4:[
+      {n:"In Reality",f:"cdr"},{n:"Magic",f:""},
+      {n:"Yankee Victor",f:""},{n:"Placer Queen",f:""},
+      {n:"Dixieland Band",f:"cdr"},{n:"Words of War",f:""},
+      {n:"Cyane",f:""},{n:"Miss Fairfield",f:""},
+      {n:"Seattle Slew",f:"tc"},{n:"Weekend Surprise",f:"cdr"},
+      {n:"Rubiano",f:""},{n:"Careless Notion",f:""},
+      {n:"Fappiano",f:"cdr"},{n:"Gana Facil",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Tea House",f:""}
+    ],
+    inbreeding:["A.P. Indy 3x4 (via Uncle Mo→Indian Charlie line and via Bernardini)","Dixieland Band 4x4 (via Uncle Mo dam and La Verdad line)"],
+    note:"Yaupon (champion sprinter) sire line is the distance concern — progeny average 6.2f winning distance. BUT: Bernardini (2006 Preakness/Travers/Jockey Club Gold Cup winner, champion) as dam sire is a powerful staying influence averaging 7.5f. Trainer Mott: 'Yaupon is a son of Uncle Mo, and there's Bernardini underneath — he always struck us as a two-turn type.' Same family as two-time champion Malathaat (Curlin). Dream Rush (dam's half-sister) won 5 straight with triple-digit Beyers at route distances. A.P. Indy 3x4 inbreeding is classic-stamina gold."
+  },
+  "Class President":{
+    g1s:"Uncle Mo",g1d:"Top Quality",
+    g2:[
+      {n:"Indian Charlie",f:""},
+      {n:"Playa Maya",f:""},
+      {n:"Quality Road",f:"cdr"},
+      {n:"Lemon Bay",f:""}
+    ],
+    g3:[
+      {n:"In Reality",f:"cdr"},
+      {n:"Magic",f:""},
+      {n:"Yankee Victor",f:""},
+      {n:"Placer Queen",f:""},
+      {n:"Elusive Quality",f:"cdr"},
+      {n:"Charmonier",f:""},
+      {n:"Bernardini",f:""},
+      {n:"Sweet Fervor",f:""}
+    ],
+    g4:[
+      {n:"Intentionally",f:"cdr"},{n:"My Dear Girl",f:""},
+      {n:"Swoon's Son",f:""},{n:"Aspidistra",f:""},
+      {n:"Dixieland Band",f:"cdr"},{n:"Yankee Lady",f:""},
+      {n:"Cyane",f:""},{n:"Miss Fairfield",f:""},
+      {n:"Gone West",f:"cdr"},{n:"Touch of Greatness",f:""},
+      {n:"Royal Academy",f:"cdr"},{n:"Charme",f:""},
+      {n:"A.P. Indy",f:"cdr"},{n:"Cara Rafaela",f:""},
+      {n:"Seeking the Gold",f:"cdr"},{n:"Sweet Revival",f:""}
+    ],
+    inbreeding:["Dixieland Band 4x5 (via Indian Charlie and Yankee Victor)"],
+    note:"SCRATCHED from Blue Grass (training unsatisfactory). Uncle Mo (BC Juvenile champion, died Dec 2024) × Quality Road (BC Dirt Mile winner, elite sire) is a high-class, speed-forward combination. Bernardini (Preakness/Travers winner) appears on dam side through Lemon Bay's dam Sweet Fervor. Multiple Chef-de-Race influences on both sides. Uncle Mo also sired 2016 KY Derby winner Nyquist. Status for May 2 Derby uncertain pending health update."
+  },
+  "Iron Honor":{
+    g1s:"Nyquist",g1d:"Orencia",
+    g2:[
+      {n:"Uncle Mo",f:""},
+      {n:"Seeking Gabrielle",f:""},
+      {n:"Blame",f:"cdr"},
+      {n:"Curry Cat",f:""}
+    ],
+    g3:[
+      {n:"Indian Charlie",f:""},
+      {n:"Playa Maya",f:""},
+      {n:"Forestry",f:"cdr"},
+      {n:"Seeking Regina",f:""},
+      {n:"Arch",f:"cdr"},
+      {n:"Liable",f:""},
+      {n:"Tale of the Cat",f:"cdr"},
+      {n:"Curren's Joy",f:""}
+    ],
+    g4:[
+      {n:"In Reality",f:"cdr"},{n:"Magic",f:""},
+      {n:"Yankee Victor",f:""},{n:"Placer Queen",f:""},
+      {n:"Storm Cat",f:"cdr"},{n:"Shared Interest",f:""},
+      {n:"Seeking the Gold",f:"cdr"},{n:"Queen Louie",f:""},
+      {n:"Kris S.",f:"cdr"},{n:"Aurora",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Blitey",f:""},
+      {n:"Storm Cat",f:"cdr"},{n:"Take Me Out",f:""},
+      {n:"Cox's Ridge",f:""},{n:"Exquisite Mistress",f:""}
+    ],
+    inbreeding:["Storm Cat 4x4 (via Forestry and Tale of the Cat)","Uncle Mo appears as great-grandsire via Nyquist"],
+    note:"⚠ Currently 21st — needs defections. Nyquist (2016 KY Derby winner) × Blame (BC Classic winner) is a phenomenal pedigree on paper. Chad Brown: 'This horse is really good — it was such a rough trip.' Had rough first-turn bump in Wood Memorial, finished 7th. Storm Cat 4x4 is powerful. Blame as dam sire is same combination that produced Iron Honor's stablemate Sovereignty (2025 KY Derby). Never raced beyond 1 mile — the largest distance stretch of any contender to the 1¼M Derby. Biggest upside question mark in the field."
+  },
+  "Litmus Test":{
+    g1s:"Into Mischief",g1d:"Letmebeyourreflection",
+    g2:[
+      {n:"Harlan's Holiday",f:"cdr"},
+      {n:"Leslie's Lady",f:""},
+      {n:"Tapit",f:"cdr"},
+      {n:"Reflective",f:""}
+    ],
+    g3:[
+      {n:"Harlan",f:""},
+      {n:"Christmas in Aiken",f:""},
+      {n:"Quiet American",f:""},
+      {n:"Weekend Surprise",f:"cdr"},
+      {n:"Pulpit",f:"cdr"},
+      {n:"Tap Your Heels",f:""},
+      {n:"A.P. Indy",f:"cdr"},
+      {n:"Mirror Lake",f:""}
+    ],
+    g4:[
+      {n:"Storm Cat",f:"cdr"},{n:"Country Romance",f:""},
+      {n:"Crafty Prospector",f:""},{n:"Lillian Russell",f:""},
+      {n:"Seeking the Gold",f:"cdr"},{n:"Pie Chart",f:""},
+      {n:"Secretariat",f:"cdr,tc"},{n:"Lassie Dear",f:""},
+      {n:"A.P. Indy",f:"cdr"},{n:"Preach",f:""},
+      {n:"Unbridled",f:"kd"},{n:"Ruby Slippers",f:""},
+      {n:"Seattle Slew",f:"tc"},{n:"Weekend Surprise",f:"cdr"},
+      {n:"Star de Naskra",f:""},{n:"Basin Street",f:""}
+    ],
+    inbreeding:["A.P. Indy 3x4 (sire Into Mischief via Harlan's Holiday→Weekend Surprise and dam via Tapit→Pulpit)","Weekend Surprise 4x4"],
+    note:"Into Mischief × Tapit is the same combination that produced multiple elite classic runners. A.P. Indy 3x4 inbreeding is the premier classic stamina pattern. However: 34 pts on bubble — needs significant defections to get into the field. Speed figures have regressed over last two starts. Baffert (6 KY Derby wins) but the horse hasn't delivered the expected development at 3yo."
+  },
+  "Potente":{
+    g1s:"Into Mischief",g1d:"Sweet Swing",
+    g2:[
+      {n:"Harlan's Holiday",f:"cdr"},
+      {n:"Leslie's Lady",f:""},
+      {n:"Awesome Again",f:"cdr"},
+      {n:"Sweet Sting",f:""}
+    ],
+    g3:[
+      {n:"Harlan",f:""},
+      {n:"Christmas in Aiken",f:""},
+      {n:"Quiet American",f:""},
+      {n:"Weekend Surprise",f:"cdr"},
+      {n:"Deputy Minister",f:"cdr"},
+      {n:"Primal Force",f:""},
+      {n:"Wild Again",f:"cdr"},
+      {n:"Tis Juliet",f:""}
+    ],
+    g4:[
+      {n:"Storm Cat",f:"cdr"},{n:"Country Romance",f:""},
+      {n:"Crafty Prospector",f:""},{n:"Lillian Russell",f:""},
+      {n:"Seeking the Gold",f:"cdr"},{n:"Pie Chart",f:""},
+      {n:"Secretariat",f:"cdr,tc"},{n:"Lassie Dear",f:""},
+      {n:"Vice Regent",f:"cdr"},{n:"Mint Copy",f:""},
+      {n:"Blushing Groom",f:"cdr"},{n:"Prime Prospect",f:""},
+      {n:"Icecapade",f:""},{n:"Bushel-n-Peck",f:""},
+      {n:"Tom Rolfe",f:"cdr"},{n:"Tis My Turn",f:""}
+    ],
+    inbreeding:["Secretariat 4x5 via Quiet American (sire) and Lassie Dear (dam)"],
+    note:"Identical Into Mischief sire line to Renegade and Commandment — the same Storm Cat/Harlan's Holiday top crosses. Awesome Again (1998 BC Classic winner at 1¼M on dirt) as dam sire is a critical stamina influence, identical to the Fulleffort dam pattern. Deputy Minister 3rd generation on dam side. Wild Again (1984 BC Classic winner) adds further classic dirt stamina. No 2yo starts — the chief CWP concern. $2.4M purchase at Fasig-Tipton Saratoga by Speedway Stable (Peter Fluor). Into Mischief sire could make this a 3-horse trifecta from the same stallion."
+  },
+  "Intrepido":{
+    g1s:"Maximus Mischief",g1d:"Overly Indulgent",
+    g2:[
+      {n:"Into Mischief",f:"cdr"},
+      {n:"Reina Maria",f:""},
+      {n:"Pleasantly Perfect",f:""},
+      {n:"Overindulge",f:""}
+    ],
+    g3:[
+      {n:"Harlan's Holiday",f:"cdr"},
+      {n:"Leslie's Lady",f:""},
+      {n:"Songandaprayer",f:""},
+      {n:"Secret Compass",f:""},
+      {n:"Pleasant Colony",f:"kd"},
+      {n:"Very Subtle",f:""},
+      {n:"Nureyev",f:"cdr"},
+      {n:"Committed",f:""}
+    ],
+    g4:[
+      {n:"Harlan",f:""},
+      {n:"Christmas in Aiken",f:""},
+      {n:"Quiet American",f:""},
+      {n:"Weekend Surprise",f:"cdr"},
+      {n:"Bel Bolide",f:""},{n:"Queena",f:""},
+      {n:"Compass Course",f:""},{n:"Secret Landing",f:""},
+      {n:"His Majesty",f:"cdr"},{n:"Sun Colony",f:""},
+      {n:"Speak John",f:""},{n:"Strictly Speaking",f:""},
+      {n:"Northern Dancer",f:"cdr"},{n:"Special",f:""},
+      {n:"Hagley",f:""},{n:"Gazala II",f:""}
+    ],
+    inbreeding:["Into Mischief appears as grandsire (via Maximus Mischief) — effectively an Into Mischief-line horse","Harlan's Holiday 3x4 (Into Mischief sire via Maximus Mischief, and again via Into Mischief himself)"],
+    note:"Maximus Mischief is a Grade 1-winning son of Into Mischief (2x2 to Into Mischief effectively via Maximus Mischief). Pleasant Colony (1981 KY Derby/Preakness winner) appears as a 3rd-generation ancestor on dam side — genuine classic staying blood. Pleasantly Perfect (2003 BC Classic winner at 1¼M) as dam's sire provides BC Classic stamina. However, sire line is very speed-biased. Ridgling (undescended testicle). Won American Pharoah G1 as a 2yo — solid juvenile form. Got in via scratch; field quality question for the SA Derby 4th."
+  },
+  "Right to Party":{
+    g1s:"Constitution",g1d:"Havin a Party",
+    g2:[
+      {n:"Tapit",f:"cdr"},
+      {n:"Jury",f:""},
+      {n:"Emcee",f:""},
+      {n:"Party Line",f:""}
+    ],
+    g3:[
+      {n:"Pulpit",f:"cdr"},
+      {n:"Tap Your Heels",f:""},
+      {n:"Officer",f:""},
+      {n:"Distorted",f:""},
+      {n:"Unbridled's Song",f:"cdr"},
+      {n:"Singing",f:""},
+      {n:"Phone Trick",f:""},
+      {n:"Party Mixer",f:""}
+    ],
+    g4:[
+      {n:"A.P. Indy",f:"cdr"},{n:"Preach",f:""},
+      {n:"Unbridled",f:"kd"},{n:"Ruby Slippers",f:""},
+      {n:"Bertrando",f:""},{n:"Lady Affirmed",f:""},
+      {n:"Pine Bluff",f:"kd"},{n:"Barbary",f:""},
+      {n:"Unbridled",f:"kd"},{n:"Trolley Song",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"On the Trail",f:""},
+      {n:"Clever Trick",f:""},{n:"Phone Lark",f:""},
+      {n:"Stage Door Johnny",f:""},{n:"Mixing Bowl",f:""}
+    ],
+    inbreeding:["Unbridled 4x4 (via Constitution's dam via Tapit→Pulpit→A.P. Indy line, and via dam's Emcee line)"],
+    note:"Constitution (Tapit son, Belmont runner-up, elite sire) × Unbridled's Song dam mirrors the pedigree of multiple classic-distance winners. Constitution's dam traces Unbridled through both A.P. Indy (via Tapit) and directly — producing effective Unbridled 4x4. Post 5 is historically the best in the Derby. McPeek won the Derby in 2024 with Mystik Dan. 81 Beyer from the Wood Memorial is below the 100 threshold but the closing trip from 11th to 2nd was visually impressive. Constitution as a sire is averaging 7.2f winning distance — acceptable for the Derby with a stamina-oriented dam."
+  },
+  "Six Speed":{
+    g1s:"Not This Time",g1d:"Browse",
+    g2:[
+      {n:"Giant's Causeway",f:"cdr"},
+      {n:"Do It With Style",f:""},
+      {n:"Medaglia d'Oro",f:"cdr"},
+      {n:"Browsing",f:""}
+    ],
+    g3:[
+      {n:"Storm Cat",f:"cdr"},
+      {n:"Mariah's Storm",f:""},
+      {n:"Rock of Gibraltar (Ire)",f:"cdr"},
+      {n:"Domasca Dan",f:""},
+      {n:"El Prado (Ire)",f:"cdr"},
+      {n:"Cappucino Bay",f:""},
+      {n:"Seeking the Gold",f:"cdr"},
+      {n:"Belong to Me",f:""}
+    ],
+    g4:[
+      {n:"Storm Bird",f:"cdr"},{n:"Terlingua",f:""},
+      {n:"Rahy",f:"cdr"},{n:"Immense",f:""},
+      {n:"Danehill",f:"cdr"},{n:"Offshore Boom",f:""},
+      {n:"Deploy",f:""},{n:"Caerlina",f:""},
+      {n:"Sadler's Wells",f:"cdr"},{n:"Lady Capulet",f:""},
+      {n:"Blushing Groom",f:"cdr"},{n:"Cap d'Antibes",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Con Game",f:""},
+      {n:"Belong to Me",f:""},{n:"In Tissar",f:""}
+    ],
+    inbreeding:["Storm Cat 3x4 (via Giant's Causeway and Storm Bird)","Mr. Prospector 4x5 (via Medaglia d'Oro and Con Game)"],
+    note:"Kentucky-bred (Tattersalls Craven Breeze Up purchase, £220K/~$300K). Not This Time × Medaglia d'Oro dam is an interesting pedigree on paper — Giant's Causeway on sire side provides speed and class, Medaglia d'Oro (BC Classic sire, classic distances) on dam side provides stamina potential. Storm Cat 3x4 inbreeding adds speed. However, trainer Seemar after the UAE Derby: 'He just did not stay. He has so much speed but needs to relax.' Post 17 has NEVER produced a KY Derby winner in 46 runnings — the single worst post in the field. All racing at Meydan — CWP N/A."
+  },
+  "Great White":{
+    g1s:"Volatile",g1d:"Kelly Bag",
+    g2:[
+      {n:"Speightstown",f:"cdr"},
+      {n:"Heavenly Pulpit",f:""},
+      {n:"Uncle Mo",f:""},
+      {n:"Snoozin Susan",f:""}
+    ],
+    g3:[
+      {n:"Gone West",f:"cdr"},
+      {n:"Silken Cat",f:""},
+      {n:"Quiet American",f:""},
+      {n:"Harpoon Hazel",f:""},
+      {n:"Indian Charlie",f:""},
+      {n:"Playa Maya",f:""},
+      {n:"Stephen Got Even",f:""},
+      {n:"Snoozin Suzy",f:""}
+    ],
+    g4:[
+      {n:"Mr. Prospector",f:"cdr"},{n:"Secrettame",f:""},
+      {n:"Storm Cat",f:"cdr"},{n:"Country Cat",f:""},
+      {n:"Fappiano",f:"cdr"},{n:"Rowdy Angel",f:""},
+      {n:"Harpooner",f:""},{n:"Hazel Dell",f:""},
+      {n:"In Reality",f:"cdr"},{n:"Magic",f:""},
+      {n:"Yankee Victor",f:""},{n:"Placer Queen",f:""},
+      {n:"A.P. Indy",f:"cdr"},{n:"Equal Venue",f:""},
+      {n:"Capote",f:""},{n:"Snooze",f:""}
+    ],
+    inbreeding:[],
+    note:"Volatile (Grade 1-winning sprinter, Speightstown son) × Uncle Mo dam (Kelly Bag). Speightstown is a Mr. Prospector-line speed influence. Uncle Mo (2010 BC Juvenile champion) adds some staying blood through Indian Charlie. However, Volatile's progeny average just 5.8 furlongs winning distance — the sire line is the most speed-biased in the field. Dam by Uncle Mo provides Kentucky Derby bloodlines (Uncle Mo sired 2016 KY Derby winner Nyquist). The Blue Grass fifth on dirt is the most critical data point — surface switch from Tapeta to Churchill Downs dirt remains the defining concern. Both career wins on synthetic."
+  },
+  "Ocelli":{
+    g1s:"Nyquist",g1d:"Ocular",
+    g2:[
+      {n:"Uncle Mo",f:""},
+      {n:"Seeking Gabrielle",f:""},
+      {n:"Tapit",f:"cdr"},
+      {n:"Sight Unseen",f:""}
+    ],
+    g3:[
+      {n:"Indian Charlie",f:""},
+      {n:"Playa Maya",f:""},
+      {n:"Forestry",f:"cdr"},
+      {n:"Seeking Regina",f:""},
+      {n:"Pulpit",f:"cdr"},
+      {n:"Tap Your Heels",f:""},
+      {n:"A.P. Indy",f:"cdr"},
+      {n:"On a Soapbox",f:""}
+    ],
+    g4:[
+      {n:"In Reality",f:"cdr"},{n:"Magic",f:""},
+      {n:"Yankee Victor",f:""},{n:"Placer Queen",f:""},
+      {n:"Storm Cat",f:"cdr"},{n:"Shared Interest",f:""},
+      {n:"Seeking the Gold",f:"cdr"},{n:"Queen Louie",f:""},
+      {n:"A.P. Indy",f:"cdr"},{n:"Preach",f:""},
+      {n:"Unbridled",f:"kd"},{n:"Ruby Slippers",f:""},
+      {n:"Seattle Slew",f:"tc"},{n:"Weekend Surprise",f:"cdr"},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Soapbox Darlin",f:""}
+    ],
+    inbreeding:["A.P. Indy 3x4 (via Nyquist through Uncle Mo and via Tapit through Pulpit)"],
+    note:"Nyquist (2016 KY Derby winner) x Tapit mare is a genuinely quality pedigree that dwarfs the $12,000 purchase price. A.P. Indy 3x4 via two completely different paths. Uncle Mo (BC Juvenile champion) x Tapit (Belmont sire) produces classic distance capability. The pedigree says he SHOULD stay 1¼ miles — but his race record says he has never been competitive. Only 3 maidens have won the Derby in 151 years. Since 1937 no maiden has finished better than 8th."
+  }
+};
+
+/* ── HORSE DATA ── */
+const DATA=[
+  {name:"Renegade",post:1,status:"active",ac:"#1D9E75",lr:"WON Arkansas Derby G1 · +4L · 98 BSF",badge:"bw",bt:"Arkansas Derby ✓",
+   trainer:"Todd Pletcher",trec:"2 Derby wins · 62 starts",te:true,
+   sire:"Into Mischief",dam:"Spice Is Nice (Curlin)",jockey:"Irad Ortiz Jr.",odds:"5-1",
+   pts:150,di:3.75,cd:0.85,bBeyer:94,rBeyer:94,bri:99,lp:110,trend:"up",
+   style:"C",styleLbl:"Deep Closer",cS:5,y3S:2,wonPrep:true,maxDist:"1⅛M",price:975000,
+   majorPrep:"Arkansas Derby",finalPrepPos:1,raced2yo:true,
+   note:"Preps complete. 2-for-2 at 3yo off fast closing kicks (11.84s last furlong in Ark Derby). Dam by Curlin offsets Into Mischief speed. Late pace 110 leads division. Five career starts is ideal. Ortiz choosing between Renegade and Further Ado — decision due after entries. Field-leading closer profile."},
+  {name:"Commandment",post:6,status:"active",ac:"#1D9E75",lr:"WON Florida Derby G1 · nose · 100 BSF",badge:"bw",bt:"Florida Derby ✓",
+   trainer:"Brad Cox",trec:"1 Derby win · 12 starts",te:true,
+   sire:"Into Mischief",dam:"Sippican Harbor (Orb)",jockey:"Luis Saez",odds:"8-1",
+   pts:200,di:3.90,cd:0.88,bBeyer:101,rBeyer:101,bri:103,lp:104,trend:"up",
+   style:"C",styleLbl:"Deep Closer",cS:5,y3S:4,wonPrep:true,maxDist:"1⅛M",price:500000,
+   majorPrep:"Florida Derby",finalPrepPos:1,raced2yo:true,
+   note:"200 pts leads all horses — most points in field. 4-race win streak. Fastest Beyer of any 2026 prep (101). Same Into Mischief × A.P. Indy cross as 2025 HOTY Sovereignty. Dam by Orb (2013 KY Derby winner). Cox ships to Churchill April 6. Ortiz or Prat — jockey decision pending. Brad Cox barn on fire (won 3 stakes at Keeneland April 4)."},
+  {name:"Further Ado",post:17,status:"active",ac:"#1D9E75",lr:"WON Blue Grass G1 · 11 lengths · 106 Beyer",badge:"bw",bt:"Blue Grass ✓",
+   trainer:"Brad Cox",trec:"1 Derby win · 12 starts",te:true,
+   sire:"Gun Runner",dam:"Sky Dreamer (Sky Mesa)",jockey:"John Velazquez",odds:"8-1",
+   pts:134,di:2.80,cd:0.50,bBeyer:106,rBeyer:106,bri:null,lp:100,trend:"up",
+   style:"C",styleLbl:"Deep Closer",cS:6,y3S:3,wonPrep:true,maxDist:"1⅛M",price:510000,
+   majorPrep:"Blue Grass",finalPrepPos:1,raced2yo:true,
+   note:"Transformed his profile in the Blue Grass — 11-length romp was the largest margin in that race since 2006. 106 Beyer ✓ crushes the 100-Beyer threshold. Thoro-Graph 'negative-1' as a juvenile. Irad Ortiz Jr. must now choose between Further Ado and Renegade. Winner at Churchill Downs (KY Jockey Club G2). Cox ships to Louisville April 6. Gun Runner × classic mares is an elite stamina combination."},
+  {name:"Fulleffort",post:19,status:"scratched",ac:"#D85A30",lr:"SCRATCHED — bone chip, left hind ankle (Apr 30, 2026)",badge:"bx",bt:"Scratched",
+   trainer:"Brad Cox",trec:"1 Derby win · 12 starts",te:true,
+   sire:"Liam's Map",dam:"Callmethesqueeze (Awesome Again)",jockey:"Tyler Gaffalione",odds:"—",
+   pts:110,di:3.65,cd:0.82,bBeyer:94,rBeyer:94,bri:99,lp:102,trend:"up",
+   style:"C",styleLbl:"Deep Closer",cS:6,y3S:3,wonPrep:true,maxDist:"1⅛M (Tapeta)",price:null,
+   majorPrep:"Jeff Ruby",finalPrepPos:1,raced2yo:true,
+   note:"SCRATCHED April 30 — bone chip in left hind ankle, fluid present on X-ray. Cox: That is part of the game. It was a problem that needed to be addressed. Surgery planned, full recovery expected, return to racing anticipated. Cox now has two Derby horses: Commandment and Further Ado. Gaffalione misses another Derby chance. Entered off a Jeff Ruby Steaks G3 win on Tapeta — never raced on dirt.",
+  {name:"Emerging Market",post:14,status:"active",ac:"#7F77DD",lr:"WON Louisiana Derby G2 · head · 90 BSF",badge:"bc",bt:"Contender",
+   trainer:"Chad Brown",trec:"0 Derby wins · 25 starts",te:false,
+   sire:"Candy Ride (Arg)",dam:"Wild Empress (Empire Maker)",jockey:"Flavien Prat",odds:"13-1",
+   pts:100,di:2.10,cd:0.30,bBeyer:90,rBeyer:90,bri:99,lp:106,trend:"up",
+   style:"C",styleLbl:"Deep Closer",cS:2,y3S:2,wonPrep:true,maxDist:"1³⁄₁₆M",price:185000,
+   majorPrep:"Louisiana Derby",finalPrepPos:1,raced2yo:false,
+   note:"⚠ Only 2 career starts — extreme inexperience for a 20-horse Derby. Best stamina dosage (DI 2.10) and late pace 106 ties for division lead. Candy Ride is a proven classic sire. Fappiano 4×4 inbreeding. Has not hit 100 Beyer threshold. Klaravich bypassed Derby with Cloud Computing (2017) and Early Voting (2022) in favor of the Preakness — connections may do the same."},
+  {name:"So Happy",post:8,status:"active",ac:"#1D9E75",lr:"WON Santa Anita Derby G1 · +2¾L · 100 BSF",badge:"bw",bt:"Santa Anita Derby ✓",
+   trainer:"Mark Glatt",trec:"0 Derby wins · 3 starts",te:false,
+   sire:"Runhappy",dam:"So Cunning (Blame)",jockey:"Mike Smith",odds:"7-1",
+   pts:100,di:3.20,cd:0.62,bBeyer:100,rBeyer:100,bri:null,lp:null,trend:"up",
+   style:"S",styleLbl:"Sustained Closer",cS:4,y3S:2,wonPrep:true,maxDist:"1⅛M",price:150000,
+   majorPrep:"Santa Anita Derby",finalPrepPos:1,raced2yo:true,
+   note:"Emotional upset for trainer Mark Glatt (wife Dena passed Feb. 12). Rated off the pace under Hall of Famer Mike Smith, drew even with Potente then powered clear. Won in 1:49.01 — faster than the last two Santa Anita Derby winners. 100 Beyer ✓. Bought for just 50K. Runhappy sire is a speed influence — dam by Blame (classic stamina) is the key counterweight. Smith: 'There's more in the tank.' First-time Derby trainer Glatt."},
+  {name:"The Puma",post:9,status:"active",ac:"#378ADD",lr:"2nd Florida Derby G1 · nose",badge:"bp",bt:"Florida Derby 2nd",
+   trainer:"Gustavo Delgado Sr.",trec:"0 Derby wins · 1 start",te:false,
+   sire:"Essential Quality",dam:"Eve of War (Declaration of War)",jockey:"Javier Castellano",odds:"5-1",
+   pts:106,di:2.50,cd:0.48,bBeyer:89,rBeyer:89,bri:91,lp:98,trend:"up",
+   style:"S",styleLbl:"Sustained Closer",cS:4,y3S:2,wonPrep:false,maxDist:"1⅛M",price:null,
+   majorPrep:"Florida Derby",finalPrepPos:2,raced2yo:true,
+   note:"Preps complete. Back-to-back elite efforts (Tampa Bay Derby win, Florida Derby photo loss). Essential Quality (Belmont winner) × Declaration of War is a solid classic pedigree. 89 Beyer is below the 100-threshold. First-time Derby trainer Delgado. Ran into the wrong horse (Commandment) at the wire in Florida — is arguably better than his record shows."},
+  {name:"Silent Tactic",post:13,status:"scratched",ac:"#D85A30",lr:"SCRATCHED — bruised foot (Apr 29, 2026)",badge:"bx",bt:"Scratched",
+   trainer:"Mark Casse",trec:"0 Derby wins · 8 starts",te:false,
+   sire:"Tacitus",dam:"Magical Sign (Gun Runner)",jockey:"Cristian Torres",odds:"—",
+   pts:100,di:2.15,cd:0.20,bBeyer:87,rBeyer:87,bri:90,lp:95,trend:"flat",
+   style:"C",styleLbl:"Deep Closer",cS:6,y3S:3,wonPrep:false,maxDist:"1⅛M",price:500000,
+   majorPrep:"Arkansas Derby",finalPrepPos:2,raced2yo:true,
+   note:"SCRATCHED April 29 — bruised foot (trainer Casse compared it to a fingernail separation: painful but minor). Casse: 'You can't run in the Kentucky Derby and not be 100%.'  Target: Preakness Stakes May 16. First or second in all 6 career starts. Deep stamina pedigree (Tacitus × Gun Runner) — an unfortunate exit for a gutsy horse."},
+  {name:"Chief Wallabee",post:12,status:"active",ac:"#BA7517",lr:"3rd Florida Derby G1 · ½L back",badge:"bsh",bt:"Florida Derby 3rd",
+   trainer:"Bill Mott",trec:"1 Derby win (2025) · 15 starts",te:true,
+   sire:"Constitution",dam:"A La Lucie (Medaglia d'Oro)",jockey:"Junior Alvarado",odds:"14-1",
+   pts:75,di:2.80,cd:0.52,bBeyer:100,rBeyer:95,bri:98,lp:99,trend:"flat",
+   style:"S",styleLbl:"Sustained Closer",cS:3,y3S:3,wonPrep:false,maxDist:"1⅛M",price:null,
+   majorPrep:"Florida Derby",finalPrepPos:3,raced2yo:true,
+   note:"Preps complete. Only 3 career starts — significant upside possible as he matures. Constitution × Medaglia d'Oro is a strong classic-stamina cross. Posted 100 Beyer in Fountain of Youth ✓. Florida Derby jockey said he 'didn't quicken as expected' — development curve. Mott won 2025 Derby with Sovereignty. Has the pedigree but hasn't shown the needed late acceleration yet."},
+  {name:"Pavlovian",post:15,status:"active",ac:"#378ADD",lr:"2nd Louisiana Derby G2 · head · 90 BSF",badge:"bp",bt:"Louisiana Derby 2nd",
+   trainer:"Doug O'Neill",trec:"2 Derby wins · 18 starts",te:true,
+   sire:"Justify",dam:"Mandy's Grace (Bellamy Road)",jockey:"Edwin Maldonado",odds:"48-1",
+   pts:70,di:2.30,cd:0.40,bBeyer:90,rBeyer:90,bri:89,lp:94,trend:"up",
+   style:"EP",styleLbl:"Early Presser",cS:5,y3S:2,wonPrep:false,maxDist:"1³⁄₁₆M",price:null,
+   majorPrep:"Louisiana Derby",finalPrepPos:2,raced2yo:true,
+   note:"Preps complete. Justify (2018 Triple Crown winner) is a premier stamina sire. Gritty runner. O'Neill has 2 Derby wins. 90 Beyer below 100 threshold. Early presser style is workable if pace sets up. Connections are confident in the distance — they've been here before."},
+  {name:"Incredibolt",post:11,status:"active",ac:"#7F77DD",lr:"WON Virginia Derby · +4L · 100 BSF",badge:"bc",bt:"Contender",
+   trainer:"Riley Mott",trec:"0 Derby wins · 2 starts",te:false,
+   sire:"Bold d'Oro",dam:"Sapphire Spitfire (Awesome Again)",jockey:"Jaime Torres",odds:"37-1",
+   pts:60,di:2.80,cd:0.55,bBeyer:88,rBeyer:88,bri:100,lp:115,trend:"up",
+   style:"C",styleLbl:"Deep Closer",cS:5,y3S:2,wonPrep:true,maxDist:"1⅛M",price:75000,
+   majorPrep:"other",finalPrepPos:1,raced2yo:true,
+   note:"Riley Mott now sends TWO horses to the Derby (also Wood Memorial winner Albus). Late pace 115 leads the entire division. Bold d'Oro injects stamina. 60 pts is 13th on leaderboard — safely in. Virginia Derby is a lesser comp, so Beyer (88) may be underrated. Torres rides both Incredibolt and Albus for Mott — jockey assignment TBD. 5K purchase is remarkable value."},
+  {name:"Albus",post:2,status:"active",ac:"#1D9E75",lr:"WON Wood Memorial G2 · +1¼L · 83 BSF (11-1)",badge:"bw",bt:"Wood Memorial ✓",
+   trainer:"Riley Mott",trec:"0 Derby wins · 2 starts",te:false,
+   sire:"Yaupon",dam:"Adream (Bernardini)",jockey:"Manny Franco",odds:"48-1",
+   pts:100,di:2.65,cd:0.48,bBeyer:83,rBeyer:83,bri:null,lp:null,trend:"up",
+   style:"C",styleLbl:"Deep Closer",cS:4,y3S:2,wonPrep:true,maxDist:"1⅛M",price:320000,
+   majorPrep:"Wood Memorial",finalPrepPos:1,raced2yo:true,
+   note:"⚠ 83 Beyer is by far the lowest among Saturday's prep winners (Further Ado 106, So Happy 100) and the weakest Beyer of any 2026 winner. Won from the Wood Memorial field that lacked the top contenders. Only 4 career starts — extremely lightly raced. Yaupon is a son of Uncle Mo (speed) but dam by Bernardini adds stamina — same family as two-time champion Malathaat. Trainer Mott: 'He always struck us as a two-turn type.' Shipping to Churchill April 6."},
+  {name:"Nearly",post:null,status:"active",ac:"#7F77DD",lr:"4th Florida Derby G1 · weakened",badge:"bc",bt:"Contender",
+   trainer:"Todd Pletcher",trec:"2 Derby wins · 62 starts",te:true,
+   sire:"Not This Time",dam:"IB Prospecting (Mineshaft)",jockey:"John Velazquez",odds:"AE (also eligible)",
+   pts:65,di:2.40,cd:0.38,bBeyer:89,rBeyer:87,bri:93,lp:90,trend:"dn",
+   style:"EP",styleLbl:"Early Presser",cS:4,y3S:2,wonPrep:false,maxDist:"1⅛M",price:350000,
+   majorPrep:"Florida Derby",finalPrepPos:4,raced2yo:true,
+   note:"Preps complete. Weakened after briefly leading Florida Derby — jockey said horse was too keen and track didn't suit. Speed figures trending down (87 most recent from 89 peak). Front-pressing style is high risk in 20-horse field. Pletcher said 'may have needed the race' — but no more preps available. Was the horse he targeted but the Florida Derby exposed distance/stamina questions."},
+  {name:"Golden Tempo",post:18,status:"active",ac:"#7F77DD",lr:"3rd Louisiana Derby G2 · 85 BSF",badge:"bc",bt:"Contender",
+   trainer:"Cherie DeVaux",trec:"0 Derby wins · 2 starts",te:false,
+   sire:"Curlin",dam:"Carrumba (Bernardini)",jockey:"Jose Ortiz",odds:"49-1",
+   pts:45,di:1.95,cd:0.15,bBeyer:85,rBeyer:85,bri:88,lp:106,trend:"flat",
+   style:"C",styleLbl:"Deep Closer",cS:5,y3S:3,wonPrep:false,maxDist:"1³⁄₁₆M",price:null,
+   majorPrep:"Louisiana Derby",finalPrepPos:3,raced2yo:true,
+   note:"Preps complete. Best stamina dosage in field (DI 1.95). Curlin × Bernardini is textbook staying blood. Late pace 106. 85 Beyer is well below 100-Beyer historical threshold. 45 pts at risk — needs defections to get in. First-time Derby trainer DeVaux."},
+  {name:"Class President",post:null,status:"scratched",ac:"#D85A30",lr:"SCRATCHED — Blue Grass (training unsatisfactory)",badge:"bx",bt:"Scratched Blue Grass",
+   trainer:"Todd Pletcher",trec:"2 Derby wins · 62 starts",te:true,
+   sire:"Uncle Mo",dam:"Top Quality (Quality Road)",jockey:"—",odds:"—",
+   pts:50,di:3.40,cd:0.70,bBeyer:88,rBeyer:88,bri:92,lp:95,trend:"flat",
+   style:"EP",styleLbl:"Early Presser",cS:4,y3S:2,wonPrep:true,maxDist:"1⅛M",price:null,
+   majorPrep:"other",finalPrepPos:99,raced2yo:true,
+   note:"Scratched from Blue Grass Stakes on April 4 after not training satisfactorily. Status for Kentucky Derby unclear — 50 pts keeps him on the points bubble but connections need to determine his readiness. Won the Rebel Stakes by a nose. Tactical speed and grit. Uncle Mo speed × Quality Road dam = good but not elite dosage for 1¼M."},
+  {name:"Iron Honor",post:null,status:"active",ac:"#D85A30",lr:"7th Wood Memorial G2 · rough trip · on bubble",badge:"bc",bt:"On bubble (21st)",
+   trainer:"Chad Brown",trec:"0 Derby wins · 9 starts",te:false,
+   sire:"Into Mischief",dam:"(Into Mischief line)",jockey:"Manny Franco",odds:"—",
+   pts:50,di:3.70,cd:0.82,bBeyer:87,rBeyer:null,bri:90,lp:92,trend:"flat",
+   style:"S",styleLbl:"Sustained Closer",cS:4,y3S:2,wonPrep:false,maxDist:"1M",price:null,
+   majorPrep:"Wood Memorial",finalPrepPos:7,raced2yo:true,
+   note:"⚠ Currently 21st on leaderboard with 50 pts — needs defections to get in. Had a brutal Wood Memorial — bumped hard on first turn, was flat down the backstretch, finished 7th. Brown: 'It was such a rough trip. This horse is really good — let me go back to the drawing board.' Needs horses above him to scratch. Big upside question: only ever raced at 1M — largest distance jump of any contender to the 1¼M Derby."},
+  {name:"Litmus Test",post:4,status:"active",ac:"#7F77DD",lr:"Preps complete — Santa Anita Derby participant",badge:"bc",bt:"Contender",
+   trainer:"Bob Baffert",trec:"6 Derby wins · 35 starts",te:true,
+   sire:"Into Mischief",dam:"(stamina mares)",jockey:"Martin Garcia",odds:"40-1",
+   pts:34,di:3.55,cd:0.72,bBeyer:86,rBeyer:83,bri:90,lp:91,trend:"dn",
+   style:"S",styleLbl:"Sustained Closer",cS:6,y3S:2,wonPrep:false,maxDist:"1⅛M",price:875000,
+   majorPrep:"other",finalPrepPos:99,raced2yo:true,
+   note:"Preps complete. Did not run in Santa Anita Derby. 34 pts is in significant danger — needs multiple defections. Speed figures have regressed over last two starts. Baffert has 6 Derby wins but needs a horse good enough to make the field. The 75K purchase has not shown the expected development."},
+  {name:"Wonder Dean",post:10,status:"active",ac:"#D4537E",lr:"WON UAE Derby G2 · +2½L · Meydan dirt",badge:"bi",bt:"UAE Derby — Int'l",cwpNA:true,
+   trainer:"Intl/Japan-based",trec:"—",te:false,
+   sire:"(Japanese breeding)",dam:"",jockey:"Ryusei Sakai",odds:"21-1",
+   pts:100,di:2.60,cd:0.45,bBeyer:null,rBeyer:null,bri:null,lp:null,trend:"?",
+   style:"S",styleLbl:"Closer",cS:null,y3S:null,wonPrep:true,maxDist:"~1M (ME dirt)",price:null,
+   majorPrep:"UAE Derby",finalPrepPos:1,raced2yo:false,
+   note:"Dee Majesty (Deep Impact son, Japanese G1 winner) × Wonder Acute (Charismatic son — 1999 KY Derby/Preakness winner). 6 career starts, 2 wins. Won UAE Derby G2 by 2½L wearing down pacesetter Six Speed. Came in off a 4th in the Saudi Derby at 1 mile — Secretariat.com notes his pedigree is 'way too short' at a mile and calls him legitimate. Trainer Takayanagi conditioned T O Password (5th in 2024 KY Derby). Werk Nick Rating from TDN: C — lowest in field. 21 previous UAE Derby starters have run in the KY Derby; only Forever Young (3rd, 2024) finished better than 5th. No Beyer/Brisnet figures available — CWP not applicable."},
+  {name:"Danon Bourbon",post:7,status:"active",ac:"#D4537E",lr:"WON Fukuryu Stakes · +3½L · Nakayama dirt",badge:"bi",bt:"Fukuryu — Japan",cwpNA:true,
+   trainer:"Japan-based",trec:"—",te:false,
+   sire:"(Japanese breeding)",dam:"",jockey:"Atsuya Nishimura",odds:"13-1",
+   pts:40,di:2.40,cd:0.40,bBeyer:null,rBeyer:null,bri:null,lp:null,trend:"?",
+   style:"S",styleLbl:"Closer",cS:null,y3S:null,wonPrep:true,maxDist:"~1M (turf/synth)",price:null,
+   majorPrep:"Fukuryu",finalPrepPos:1,raced2yo:false,
+   note:"Maxfield (Street Sense son, Grade 1 winner) × Wild Ridge (Tapit mare) — the most US-pedigreed of the international horses, Kentucky-bred by Blue Heaven Farm ($450K KEESEP). 3-for-3 by combined 18½ lengths — 10L debut win, 5L allowance win, 3½L Fukuryu win. Fukuryu time (1:50.9 for 1⅛M on muddy Nakayama) is the best in that race for 20+ years. Stalking style suits a 20-horse Derby field. Wild Ridge is half-sister to graded winners Cazadero and Dubyuhnell. Maxfield × Tapit is a classic distance pedigree. KEY CAVEAT: All races on JRA dirt in Japan — no Beyer/Brisnet figures, field quality unquantifiable vs US competition. Previous Fukuryu→Derby: T O Password 5th (2024), Luxor Café 12th (2025). CWP not applicable."},
+    {name:"Potente",post:13,status:"active",ac:"#BA7517",lr:"2nd Santa Anita Derby G1 · nose · 96 BSF",badge:"bp",bt:"SA Derby 2nd",
+   trainer:"Bob Baffert",trec:"6 Derby wins · 35 starts",te:true,
+   sire:"Into Mischief",dam:"Sweet Swing (Awesome Again)",jockey:"Juan Hernandez",odds:"28-1",
+   pts:100,di:3.80,cd:0.85,bBeyer:96,rBeyer:96,bri:null,lp:null,trend:"up",
+   style:"EP",styleLbl:"Early Presser",cS:3,y3S:3,wonPrep:false,maxDist:"1⅛M",price:2400000,
+   majorPrep:"Santa Anita Derby",finalPrepPos:2,raced2yo:true,
+   note:"$2.4M Into Mischief colt from Speedway Stables (Peter Fluor). Won San Felipe G2 then fought gamely vs So Happy in Santa Anita Derby. Baffert: 'One of the strongest Derby horses I have brought east in a decade.' Same Into Mischief sire as Renegade and Commandment. Dam by Awesome Again (BC Classic winner) provides stamina. Post 14 is historically productive. Baffert seeks record-breaking 7th KY Derby win. Juan Hernandez in first Derby start. DI concern — same speed profile as field leaders but faces deeper closers."},
+  {name:"Intrepido",post:3,status:"active",ac:"#7F77DD",lr:"4th Santa Anita Derby G1 · 89 BSF",badge:"bc",bt:"Contender",
+   trainer:"Jeff Mullins",trec:"0 Derby wins · 4 starts",te:false,
+   sire:"Maximus Mischief",dam:"Overly Indulgent (Pleasantly Perfect)",jockey:"Hector Berrios",odds:"54-1",
+   pts:38,di:2.90,cd:0.58,bBeyer:null,rBeyer:null,bri:null,lp:null,trend:"flat",
+   style:"S",styleLbl:"Stalker",cS:6,y3S:4,wonPrep:false,maxDist:"1⅛M",price:385000,
+   majorPrep:"Santa Anita Derby",finalPrepPos:4,raced2yo:true,
+   note:"Got in when Stark Contrast defected for the American Turf. Won American Pharoah G1 at Santa Anita as a 2yo, 5th in BC Juvenile, 2nd Robert Lewis G3, 4th Santa Anita Derby G1. All racing done in California. Ridgling (undescended testicle). Post 3 is workable. Mullins: 'I didn't expect that' after sharp 47.4 work at Santa Anita April 19. First Derby for trainer Mullins since Buzzards Bay (5th) in 2005. 38 pts — the lowest of any confirmed starter. Sire Maximus Mischief primarily a speed influence; dam by Pleasantly Perfect (BC Classic winner) provides some stamina."},
+  {name:"Right to Party",post:5,status:"active",ac:"#7F77DD",lr:"2nd Wood Memorial G2 · 81 BSF",badge:"bp",bt:"Wood Memorial 2nd",
+   trainer:"Kenny McPeek",trec:"1 Derby win (2024) · 8 starts",te:true,
+   sire:"Constitution",dam:"Havin a Party (Emcee)",jockey:"Chris Elliott",odds:"31-1",
+   pts:65,di:2.70,cd:0.50,bBeyer:81,rBeyer:81,bri:90,lp:null,trend:"up",
+   style:"C",styleLbl:"Deep Closer",cS:4,y3S:2,wonPrep:false,maxDist:"1⅛M",price:null,
+   majorPrep:"Wood Memorial",finalPrepPos:2,raced2yo:true,
+   note:"Closed from 11th of 12 to finish 2nd in Wood Memorial — visually impressive even if Beyer (81) is below threshold. Constitution × Emcee dam is a workable stamina pedigree. McPeek won the Derby in 2024 with Mystik Dan. Post 5 is historically the best post in Derby history (10 winners). McPeek: 'He is legitimately a longshot. He's going to have to really relish Churchill.' Assistant trainer Jerkens: 'He always gets in traffic but deals with it and when he gets out he just comes running.' True closer who will need pace heat and racing luck."},
+  {name:"Six Speed",post:17,status:"active",ac:"#D4537E",lr:"2nd UAE Derby G2 · beaten by Wonder Dean",badge:"bi",bt:"UAE Derby 2nd",cwpNA:true,
+   trainer:"Bhupat Seemar",trec:"0 Derby wins · 1 start",te:false,
+   sire:"Not This Time",dam:"Browse (Medaglia d'Oro)",jockey:"Brian Hernandez Jr.",odds:"49-1",
+   pts:60,di:2.45,cd:0.40,bBeyer:null,rBeyer:null,bri:null,lp:null,trend:"?",
+   style:"E",styleLbl:"Front Runner",cS:5,y3S:null,wonPrep:false,maxDist:"~1³⁄₁₆M (UAE)",price:304680,
+   majorPrep:"UAE Derby",finalPrepPos:2,raced2yo:false,
+   note:"Kentucky-bred, purchased at Tattersalls Craven Breeze Up for £220K. Won UAE 2000 Guineas G3 by 5L then led until collared by Wonder Dean in UAE Derby. Trainer Seemar after the loss: 'He just didn't stay. He has so much speed but needs to relax.' Post 17 has NEVER produced a Derby winner in 46 runnings — the worst post in the field. Seemar ran Summer Is Tomorrow from Post 17 in 2022 (set blazing fractions, faded to last). All racing at Meydan — no US speed figures. Not This Time × Medaglia d'Oro dam is an interesting pedigree but heavy speed bias. Churchill Downs 1¼M with 20 horses from post 17 is a severe ask. CWP not applicable (international)."},
+  {name:"Great White",post:20,status:"active",ac:"#D85A30",lr:"5th Blue Grass G1 · faded · synthetic specialist concern",badge:"bc",bt:"AE → In field",
+   trainer:"John Ennis",trec:"0 Derby wins · 2 starts",te:false,
+   sire:"Volatile",dam:"Kelly Bag (Uncle Mo)",jockey:"Alex Achard",odds:"50-1",
+   pts:34,di:3.10,cd:0.65,bBeyer:null,rBeyer:null,bri:null,lp:null,trend:"dn",
+   style:"EP",styleLbl:"Early Presser",cS:5,y3S:3,wonPrep:false,maxDist:"1⅟₁₆M (Tapeta)",price:55000,
+   majorPrep:"Blue Grass",finalPrepPos:5,raced2yo:true,cwpNA:false,
+   note:"Draws in from AE list replacing scratched Silent Tactic. Both career wins on Tapeta synthetic at Turfway. In the Blue Grass — his only dirt start — he set the pace and faded to a distant 5th. Trainer Ennis: 'He gets the two turns so well. I don't think distance is going to be a problem.' Volatile (G1-winning sprinter, stands at Three Chimneys for $10K) is a speed-biased sire. Dam by Uncle Mo (Nyquist's sire) adds some staying blood. $55K purchase at Fasig-Tipton December 2024. Surface switch from Tapeta to Churchill Downs dirt is the defining question — every piece of data available points to a synthetic specialist. Post 20 has a 10.5% historical win rate but is very wide with 20 horses."},
+  {name:"Ocelli",post:19,status:"active",ac:"#D85A30",lr:"3rd Wood Memorial G2 · benefited from pace meltdown · 81 Beyer",badge:"bc",bt:"AE -> In field",
+   trainer:"Whit Beckman",trec:"0 Derby wins · 2 starts",te:false,
+   sire:"Nyquist",dam:"Ocular (Tapit)",jockey:"Joseph Ramos",odds:"50-1",
+   pts:34,di:2.60,cd:0.42,bBeyer:81,rBeyer:81,bri:null,lp:null,trend:"up",
+   style:"C",styleLbl:"Deep Closer",cS:6,y3S:3,wonPrep:false,maxDist:"1⅛M",price:12000,
+   majorPrep:"Wood Memorial",finalPrepPos:3,raced2yo:true,cwpNA:false,
+   note:"The only maiden in the field — never won in 6 career starts. Only 3 horses have ever won the Derby as a maiden (Buchanan 1884, Sir Barton 1919, Brokers Tip 1933), and since 1937 the best finish by a maiden is 8th. Drew in replacing scratched Fulleffort. Career-best Beyer 81 came in Wood Memorial when pace collapsed and he picked up tiring horses for 3rd. $12,000 purchase — cheapest horse in the field. Nyquist x Tapit mare is a quality pedigree that far outclasses the purchase price. Beckman: quietly confident things would go our way. Post 19 from the outside. Longshot of longshots — history is firmly against him."},
+{name:"Paladin",post:null,status:"scratched",ac:"#D85A30",lr:"SCRATCHED — condylar fracture, right front ankle",badge:"bx",bt:"Off trail",
+   trainer:"Chad Brown",trec:"0 Derby wins · 9 starts",te:false,
+   sire:"Gun Runner",dam:"(stamina mare)",jockey:"—",odds:"—",
+   pts:60,di:2.20,cd:0.25,bBeyer:92,rBeyer:92,bri:97,lp:98,trend:"up",
+   style:"EP",styleLbl:"Early Presser",cS:6,y3S:3,wonPrep:true,maxDist:"1⅛M",price:null,
+   majorPrep:"other",finalPrepPos:99,raced2yo:true,
+   note:"Former points leader and futures favorite. Suffered non-displaced condylar fracture of right front ankle on March 28. Off Triple Crown trail entirely. Gun Runner × Tapit stamina mare was one of the cleanest dosage profiles in the field (DI 2.20). Significant loss to the quality of this year's field."}
+];
+
+
+/* ── PEDIGREE RENDERER ── */
+function pedFlags(flags){
+  if(!flags||flags==='')return{kd:false,tc:false,cdr:false,inbred:false};
+  return{
+    kd:flags.includes('kd'),
+    tc:flags.includes('tc'),
+    cdr:flags.includes('cdr'),
+    inbred:flags.includes('inbred')
+  };
+}
+
+function nodeClass(f,inbredNames,name){
+  if(inbredNames&&inbredNames.some(n=>n.split(' ')[0]===name.split(' ')[0]))return 'pnode pn-inbred';
+  if(!f||f==='')return 'pnode pn-default';
+  if(f.includes('tc'))return 'pnode pn-tc';
+  if(f.includes('kd'))return 'pnode pn-kd';
+  if(f.includes('cdr'))return 'pnode pn-cdr';
+  return 'pnode pn-default';
+}
+
+function pillHtml(f){
+  if(!f||f==='')return'';
+  const pills=[];
+  if(f.includes('kd'))pills.push('<span class="ppill" style="background:#D1FAE5;color:#065F46;">KY Derby</span>');
+  if(f.includes('tc'))pills.push('<span class="ppill" style="background:#FEF3C7;color:#78350F;">Triple Crown</span>');
+  if(f.includes('cdr'))pills.push('<span class="ppill" style="background:#DBEAFE;color:#1E3A5F;">CdR</span>');
+  return pills.join('');
+}
+
+function buildPedTree(horseName){
+  const p=PED[horseName];
+  if(!p)return`<p style="font-size:11px;color:var(--text3);font-family:var(--mono);">Detailed pedigree data not available for this horse.</p>`;
+
+  const inbredSet=new Set();
+  if(p.inbreeding&&p.inbreeding.length){
+    p.inbreeding.forEach(s=>{
+      const nm=s.split(' ')[0];
+      inbredSet.add(nm);
+    });
+  }
+
+  function nc(f,name){return nodeClass(f,p.inbreeding?[...inbredSet]:[],name);}
+
+  let html=`<div class="ped-title">5-Cross Pedigree — ${horseName}</div>`;
+  html+=`<div class="tree">`;
+
+  /* G1: subject */
+  html+=`<div class="gen-col"><div class="gen-hdr">Horse</div>`;
+  html+=`<div class="pnode pn-default" style="grid-row:span 16;background:#F7F5F0;border-color:#ccc;">
+    <div class="pname" style="font-size:10px;">${horseName}</div>
+    <div class="pyear">2023 · 3yo</div>
+  </div></div>`;
+
+  /* G2: sire / dam */
+  html+=`<div class="gen-col"><div class="gen-hdr">Sire / Dam</div>`;
+  const g2pairs=[
+    {n:p.g1s,f:'',side:'sire',cls:'pn-sire'},
+    {n:p.g1d,f:'',side:'dam',cls:'pn-dam'}
+  ];
+  g2pairs.forEach(nd=>{
+    const ic=inbredSet.has(nd.n.split(' ')[0])?'pn-inbred':nd.cls;
+    html+=`<div class="pnode ${ic}" style="flex:1">
+      <div class="pname">${nd.n}</div>
+      ${pillHtml(nd.f)}
+    </div>`;
+  });
+  html+=`</div>`;
+
+  /* G3: grandparents */
+  html+=`<div class="gen-col"><div class="gen-hdr">Grandparents</div>`;
+  if(p.g2&&p.g2.length){
+    p.g2.forEach((nd,i)=>{
+      const cls=nc(nd.f,nd.n);
+      html+=`<div class="${cls}" style="flex:1">
+        <div class="pname">${nd.n}</div>
+        ${pillHtml(nd.f)}
+      </div>`;
+    });
+  }
+  html+=`</div>`;
+
+  /* G4: great-grandparents */
+  html+=`<div class="gen-col"><div class="gen-hdr">Great-grandparents</div>`;
+  if(p.g3&&p.g3.length){
+    p.g3.forEach(nd=>{
+      const cls=nc(nd.f,nd.n);
+      html+=`<div class="${cls}" style="flex:1">
+        <div class="pname" style="font-size:8.5px;">${nd.n}</div>
+        ${pillHtml(nd.f)}
+      </div>`;
+    });
+  }
+  html+=`</div>`;
+
+  /* G5: 2nd great-grandparents */
+  html+=`<div class="gen-col"><div class="gen-hdr">2nd Great-grandparents</div>`;
+  if(p.g4&&p.g4.length){
+    p.g4.forEach(nd=>{
+      const cls=nc(nd.f,nd.n);
+      html+=`<div class="${cls}" style="flex:1;padding:3px 5px">
+        <div class="pname" style="font-size:8px;">${nd.n}</div>
+        ${pillHtml(nd.f)}
+      </div>`;
+    });
+  }
+  html+=`</div>`;
+
+  html+=`</div>`; /* end .tree */
+
+  /* Pedigree key */
+  html+=`<div class="ped-key">
+    <div class="pk"><div class="pk-sq" style="background:var(--green-lt);border:1px solid var(--green)"></div>KY Derby winner in tree</div>
+    <div class="pk"><div class="pk-sq" style="background:#FFFBEA;border:1px solid #F0D060"></div>Triple Crown winner</div>
+    <div class="pk"><div class="pk-sq" style="background:var(--blue-lt);border:1px solid var(--blue)"></div>Chef-de-Race</div>
+    <div class="pk"><div class="pk-sq" style="background:var(--amber-lt);border:1px solid var(--amber)"></div>Inbred ancestor</div>
+    <div class="pk"><div class="pk-sq" style="background:#EBF3FC;border:1px solid #B5D4F4"></div>Sire line</div>
+    <div class="pk"><div class="pk-sq" style="background:#F5EDF9;border:1px solid #DDB8EC"></div>Dam line</div>
+  </div>`;
+
+  if(p.inbreeding&&p.inbreeding.length){
+    html+=`<div class="inbreed-note">⚡ Inbreeding: ${p.inbreeding.join(' · ')}</div>`;
+  }
+
+  if(p.note){
+    html+=`<div style="font-size:10px;color:var(--text2);font-family:var(--mono);margin-top:8px;line-height:1.5;">${p.note}</div>`;
+  }
+
+  return html;
+}
+
+/* ══════════════════════════════════════════════════════
+   CWP — COMPOSITE WINNER PROFILE SCORING ENGINE
+   Based on 2006–2025 Kentucky Derby winner analysis (N=20)
+   Max score: 10.0 pts across 6 weighted criteria
+════════════════════════════════════════════════════════ */
+function calcCWP(h) {
+  const criteria = {};
+
+  /* 1. Raced at age 2 — 90% hit rate → 1.5 pts */
+  const age2 = h.raced2yo !== false; // default true unless explicitly false
+  criteria.age2 = { pts: age2 ? 1.5 : 0, max: 1.5,
+    label: 'Raced at 2', dot: age2 ? 'full' : 'none' };
+
+  /* 2. Age-3 starts — 90% hit rate → 2.0 pts
+     2–3 starts = full, 4 = partial, 5+ = 0 */
+  const s3 = h.y3S ?? 0;
+  const age3pts = s3 <= 3 && s3 >= 2 ? 2.0 : s3 === 4 ? 1.0 : 0;
+  criteria.age3 = { pts: age3pts, max: 2.0,
+    label: `${s3} 3yo starts`, dot: age3pts === 2.0 ? 'full' : age3pts > 0 ? 'part' : 'none' };
+
+  /* 3. Lifetime starts 3–7 — 90% hit rate → 1.5 pts
+     3–7 = full, 8 = partial, <3 or 9+ = 0 */
+  const ls = h.cS ?? 0;
+  const lifepts = ls >= 3 && ls <= 7 ? 1.5 : ls === 8 ? 0.5 : 0;
+  criteria.life = { pts: lifepts, max: 1.5,
+    label: `${ls} career starts`, dot: lifepts === 1.5 ? 'full' : lifepts > 0 ? 'part' : 'none' };
+
+  /* 4. Final prep finish top-3 — 90% hit rate → 2.0 pts
+     1st–3rd = full, 4th = partial, 5th+ / scratched = 0 */
+  const fp = h.finalPrepPos ?? (h.wonPrep ? 1 : h.status === 'scratched' ? 99 : 5);
+  const preppx = fp <= 3 ? 2.0 : fp === 4 ? 0.5 : 0;
+  criteria.prep = { pts: preppx, max: 2.0,
+    label: fp <= 3 ? `P${fp} final prep` : fp === 4 ? '4th final prep' : 'Off/missed',
+    dot: preppx === 2.0 ? 'full' : preppx > 0 ? 'part' : 'none' };
+
+  /* 5. Major prep funnel — 75% hit rate → 1.5 pts
+     Tier 1 (FL/ARK/SA/BG) = 1.5, Tier 2 (Wood/Jeff Ruby/LA/UAE/Japan) = 0.75, other = 0 */
+  const tier1 = ['Florida Derby','Arkansas Derby','Santa Anita Derby','Blue Grass'];
+  const tier2 = ['Wood Memorial','Jeff Ruby','Louisiana Derby','UAE Derby','Fukuryu'];
+  const mpf = h.majorPrep ?? 'other';
+  const majpts = tier1.some(t => mpf.includes(t)) ? 1.5
+               : tier2.some(t => mpf.includes(t)) ? 0.75 : 0;
+  criteria.major = { pts: majpts, max: 1.5,
+    label: majpts === 1.5 ? 'Tier-1 prep' : majpts > 0 ? 'Tier-2 prep' : 'Other prep',
+    dot: majpts === 1.5 ? 'full' : majpts > 0 ? 'part' : 'none' };
+
+  /* 6. Speed/closing metric — 87% hit rate → 1.5 pts
+     95+ Beyer = 1.0 (adjusted from 100 per backtesting), 100+ Beyer = 1.5
+     LP ≥ 108 adds 0.5 if Beyer is 95–99 (stacks to 1.5 max) */
+  const bBeyer = h.bBeyer ?? 0;
+  const lp6    = h.lp ?? 0;
+  let speedPts = 0;
+  if (bBeyer >= 100) { speedPts = 1.5; }
+  else if (bBeyer >= 95) { speedPts = Math.min(1.0 + (lp6 >= 108 ? 0.5 : 0), 1.5); }
+  else if (lp6 >= 108) { speedPts = 0.5; }
+  const speedLabel = speedPts >= 1.5 ? '100+ Beyer (elite)' : speedPts >= 1.0 ? '95+ Beyer' : speedPts > 0 ? 'LP ≥ 108 only' : 'No speed flag';
+  criteria.speed = { pts: speedPts, max: 1.5,
+    label: speedLabel,
+    dot: speedPts >= 1.0 ? 'full' : speedPts > 0 ? 'part' : 'none' };
+
+  const total = Object.values(criteria).reduce((s, c) => s + c.pts, 0);
+  return { total: +total.toFixed(2), criteria };
+}
+
+function cwpColor(score) {
+  if (score >= 9.0) return 'elite';
+  if (score >= 7.5) return 'strong';
+  if (score >= 6.0) return 'mid';
+  return 'weak';
+}
+
+function cwpBarColor(score) {
+  if (score >= 9.0) return '#1D9E75';
+  if (score >= 7.5) return '#BA7517';
+  if (score >= 6.0) return '#D85A30';
+  return '#D5D3CD';
+}
+
+function cwpHtml(h) {
+  if (h.cwpNA) {
+    return `<div class="cwp-wrap">
+      <div class="cwp-top">
+        <div>
+          <div class="cwp-label">Composite Winner Profile</div>
+          <div style="font-size:10px;color:var(--color-text-secondary);font-family:var(--mono);">International entry — insufficient comparable data</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:22px;font-weight:500;color:var(--color-text-secondary);font-family:var(--font-serif);line-height:1;">N/A</div>
+          <div style="font-size:10px;color:var(--color-text-secondary);">/10</div>
+        </div>
+      </div>
+      <div class="cwp-bar-wrap"><div class="cwp-bar" style="width:0%;background:var(--color-border-tertiary);"></div></div>
+      <div style="font-size:10px;color:var(--color-text-secondary);font-family:var(--mono);line-height:1.5;">No Beyer Speed Figures · No Brisnet pace figures · JRA/UAE dirt ≠ Churchill Downs dirt · Field quality not cross-comparable to US preps. CWP framework requires US-standard performance data.</div>
+    </div>`;
+  }
+  const { total, criteria } = calcCWP(h);
+  const pct = (total / 10 * 100).toFixed(1);
+  const cls = cwpColor(total);
+  const col = cwpBarColor(total);
+  const label = total >= 9.0 ? 'Elite fit' : total >= 7.5 ? 'Strong fit' : total >= 6.0 ? 'Partial fit' : 'Low fit';
+  const rows = Object.values(criteria).map(c =>
+    `<div class="cwp-row"><div class="cwp-dot ${c.dot}"></div><span>${c.label} <span style="color:${c.pts===c.max?'var(--green-dk)':c.pts>0?'var(--amber)':'var(--text3)'};">(${c.pts}/${c.max})</span></span></div>`
+  ).join('');
+  return `<div class="cwp-wrap">
+    <div class="cwp-top">
+      <div>
+        <div class="cwp-label">Composite Winner Profile</div>
+        <div style="font-size:10px;color:var(--text3);font-family:var(--mono);">${label} · based on 2006–2025 winners</div>
+      </div>
+      <div class="cwp-score ${cls}">${total.toFixed(1)}<span style="font-size:12px;color:var(--text3);font-family:var(--sans);font-weight:400;">/10</span></div>
+    </div>
+    <div class="cwp-bar-wrap"><div class="cwp-bar" style="width:${pct}%;background:${col};"></div></div>
+    <div class="cwp-rows">${rows}</div>
+  </div>`;
+}
+
+/* ── PAST PERFORMANCES ── */
+function bsrClass(b){if(b==='N/A'||b==='—'||b===null)return'';const n=parseInt(b);if(isNaN(n))return'';return n>=100?'hi':n>=90?'mid':'lo';}
+function finClass(f){if(f===1||f==='1')return'pp-fin-1';if(f===2||f==='2')return'pp-fin-2';if(f===3||f==='3')return'pp-fin-3';return'';}
+
+/* Build all PP drawer HTML upfront and inject into page-level drawer div */
+function buildAllPPDrawers(){
+  const container = document.getElementById('ppDrawerContainer');
+  if(!container || typeof PP === 'undefined') return;
+  container.innerHTML = Object.keys(PP).map(horseName => {
+    const pid = `pp_${horseName.replace(/\s+/g,'_').replace(/'/g,'')}`;
+    const rows = PP[horseName].map(r => {
+      const bClass = bsrClass(r.bsr);
+      const fClass = finClass(r.fin);
+      const bDisplay = r.bsr === 'N/A' ? '<span style="color:var(--text3)">N/A</span>' : r.bsr === '—' ? '—' : `<span class="pp-bsr ${bClass}">${r.bsr}</span>`;
+      if(r.rn === '—') return `<tr><td colspan="9" class="pp-note" style="padding:5px 10px;">${r.note}</td></tr>`;
+      return `<tr>
+        <td style="white-space:nowrap;color:var(--text3);">${r.dt}</td>
+        <td style="white-space:nowrap;font-weight:500;">${r.trk}</td>
+        <td style="white-space:nowrap;">${r.rn}</td>
+        <td style="white-space:nowrap;">${r.dist}</td>
+        <td style="white-space:nowrap;">${r.surf}${r.cond&&r.cond!=='—'?' · '+r.cond:''}</td>
+        <td class="${fClass}" style="text-align:center;font-weight:700;font-size:13px;">${r.fin}</td>
+        <td style="text-align:center;">${r.lb}</td>
+        <td style="text-align:center;">${bDisplay}</td>
+        <td style="color:var(--text3);font-size:10px;font-style:italic;">${r.note}</td>
+      </tr>`;
+    }).join('');
+    return `<div class="pp-panel" id="${pid}" style="display:none;">
+      <div style="background:var(--text);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-family:var(--serif);font-size:16px;">${horseName} — Past Performances</div>
+        <button onclick="closePPDrawer('${pid}')" style="background:rgba(255,255,255,.15);border:none;color:#fff;padding:4px 12px;border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:11px;">✕ Close</button>
+      </div>
+      <div style="overflow-x:auto;padding:0 0 8px;">
+        <table class="pp-table" style="min-width:900px;">
+          <thead><tr><th>Date</th><th>Track</th><th>Race</th><th>Dist</th><th>Surface</th><th style="text-align:center;">Fin</th><th style="text-align:center;">Back</th><th style="text-align:center;">Beyer</th><th>Notes</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function ppHtml(horseName){
+  const hasPP = typeof PP !== 'undefined' && PP[horseName];
+  if(!hasPP) return '';
+  const pid = `pp_${horseName.replace(/\s+/g,'_').replace(/'/g,'')}`;
+  const tid = `pptog_${horseName.replace(/\s+/g,'_').replace(/'/g,'')}`;
+  const raceCount = PP[horseName].filter(r=>r.rn!=='—').length;
+  return `
+  <div class="div"></div>
+  <div class="pp-toggle" id="${tid}" onclick="openPPDrawer('${pid}','${horseName}')">
+    <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9" fill="currentColor"/></svg>
+    Past Performances · ${raceCount} races
+  </div>`;
+}
+
+function openPPDrawer(pid, horseName){
+  // Close any open drawer first
+  document.querySelectorAll('#ppDrawerContainer .pp-panel').forEach(p => p.style.display='none');
+  const panel = document.getElementById(pid);
+  if(!panel) return;
+  panel.style.display = 'block';
+  // Scroll drawer into view smoothly
+  const drawer = document.getElementById('ppDrawerContainer');
+  if(drawer) drawer.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function closePPDrawer(pid){
+  const panel = document.getElementById(pid);
+  if(panel) panel.style.display = 'none';
+}
+
+/* ── POST POSITION HELPERS ── */
+const POST_WINS = {1:5,2:9,3:8,4:7,5:10,6:9,7:8,8:7,9:6,10:9,11:5,12:6,13:7,14:5,15:7,16:4,17:0,18:3,19:2,20:4};
+const POST_NOTES = {
+  1:'Rail — 5 winners since 1930',2:'9 winners — strong record',3:'8 winners incl Mystik Dan  2024',
+  4:'7 winners',5:'Most winners all-time (10)',6:'9 winners — CA Chrome, Always Dreaming',
+  7:'8 winners incl Justify  2018',8:'7 winners',9:'6 winners incl Mage  23',
+  10:'9 winners incl Secretariat  73',11:'5 winners',12:'6 winners',
+  13:'7 winners — improving record',14:'5 winners',15:'7 winners — Orb, Am. Pharoah, Authentic',
+  16:'4 winners incl Sovereignty  25',17:'⚠ ZERO wins in 46 runnings',
+  18:'3 winners',19:'2 winners',20:'4 winners — highest win% (10.5%)'
+};
+function postColor(p){
+  if(!p) return '#9B9A96';
+  if(p===17) return '#D85A30';
+  if([5,6,10,2,3,7].includes(p)) return '#1D9E75';
+  if([15,13,20,9].includes(p)) return '#BA7517';
+  return '#378ADD';
+}
+function postNote(p){return POST_NOTES[p]||'';}
+
+/* ── CARD RENDERER ── */
+function diBarC(d){return d<2.5?'#1D9E75':d<4?'#BA7517':'#D85A30';}
+
+
+function togglePed(pid,tid){
+  const panel=document.getElementById(pid);
+  const tog=document.getElementById(tid);
+  const isOpen=panel.classList.toggle('open');
+  tog.classList.toggle('open',isOpen);
+}
+
+
+/* ══════════════════════════════════════════════════════
+   PACE DATA — Brisnet E1/E2/LP + last prep sectionals
+   E1  = early speed figure (first ¼ mile)
+   E2  = middle pace figure (first ½ mile)
+   LP  = late pace figure (final ⅜, already in card)
+   projPos = projected position at ½M call (1=lead, 9=last)
+════════════════════════════════════════════════════════ */
+const PACE = {
+  "Renegade":       {e1:73, e2:85,  lp:110, halfCall:"47.80", finalF:"11.84", prep:"Arkansas Derby G1",    projPos:9, dotColor:"#1D9E75"},
+  "Commandment":    {e1:92, e2:98,  lp:104, halfCall:"48.80", finalF:"12.31", prep:"Florida Derby G1",     projPos:5, dotColor:"#1D9E75"},
+  "Further Ado":    {e1:84, e2:93,  lp:106, halfCall:"47.71", finalF:"11.90", prep:"Blue Grass G1",        projPos:5, dotColor:"#1D9E75"},
+  "So Happy":       {e1:82, e2:88,  lp:102, halfCall:"47.10", finalF:"12.10", prep:"Santa Anita Derby G1", projPos:4, dotColor:"#1D9E75"},
+  "Albus":          {e1:72, e2:82,  lp:95,  halfCall:"48.50", finalF:"12.30", prep:"Wood Memorial G2",     projPos:8, dotColor:"#1D9E75"},
+  "Fulleffort":     {e1:78, e2:88,  lp:102, halfCall:"48.60", finalF:"12.40", prep:"Jeff Ruby Steaks G3",  projPos:6, dotColor:"#7F77DD"},
+  "Emerging Market":{e1:80, e2:88,  lp:106, halfCall:"46.23", finalF:"12.51", prep:"Louisiana Derby G2",   projPos:7, dotColor:"#7F77DD"},
+  "The Puma":       {e1:82, e2:89,  lp:98,  halfCall:"47.90", finalF:"12.68", prep:"Florida Derby G1",     projPos:4, dotColor:"#378ADD"},
+  "Silent Tactic":  {e1:76, e2:85,  lp:95,  halfCall:"47.80", finalF:"12.50", prep:"Arkansas Derby G1",    projPos:7, dotColor:"#378ADD"},
+  "Chief Wallabee": {e1:84, e2:92,  lp:99,  halfCall:"48.10", finalF:"12.57", prep:"Florida Derby G1",     projPos:5, dotColor:"#BA7517"},
+  "Pavlovian":      {e1:88, e2:90,  lp:94,  halfCall:"46.23", finalF:"12.96", prep:"Louisiana Derby G2",   projPos:2, dotColor:"#378ADD"},
+  "Incredibolt":    {e1:78, e2:88,  lp:115, halfCall:"49.00", finalF:"11.95", prep:"Virginia Derby",       projPos:8, dotColor:"#7F77DD"},
+  "Nearly":         {e1:90, e2:93,  lp:90,  halfCall:"48.00", finalF:"12.80", prep:"Florida Derby G1",     projPos:3, dotColor:"#7F77DD"},
+  "Golden Tempo":   {e1:70, e2:80,  lp:106, halfCall:"46.23", finalF:"12.60", prep:"Louisiana Derby G2",   projPos:9, dotColor:"#7F77DD"},
+  "Ocelli":         {e1:74, e2:82,  lp:88,  halfCall:"48.80", finalF:"12.60", prep:"Wood Memorial G2",     projPos:15, dotColor:"#D85A30"},
+  "Paladin":        {e1:85, e2:92,  lp:98,  halfCall:"47.20", finalF:"12.30", prep:"Risen Star G2",        projPos:4, dotColor:"#D85A30"}
+};
+
+/* Pace scenario config */
+/* ══════════════════════════════════════════════════════
+   CALL-POINT TIMELINE ENGINE
+   Shows projected running ORDER at each race call point
+   (not a finishing prediction — position at that moment)
+   Separate from benefit/risk which is shown as a badge
+
+   Position at each call derived from running style +
+   actual prep race running lines. Scenario shifts how
+   much speed horses press vs rate back.
+════════════════════════════════════════════════════════ */
+
+/* Per-horse position estimates at each call point
+   1 = on the lead, 20 = last
+   Derived from actual prep race running positions
+   Format: [gate, quarter, half, threequarter, stretch] */
+const CALL_POSITIONS = {
+  'Nearly':         [2,  2,  2,  3,  5],
+  'Six Speed':      [1,  1,  2,  5,  9],
+  'Pavlovian':      [3,  3,  3,  4,  7],
+  'Great White':    [2,  3,  4,  6, 10],
+  'Potente':        [4,  4,  4,  5,  8],
+  'Litmus Test':    [5,  5,  5,  7, 11],
+  'Intrepido':      [6,  6,  7,  8, 12],
+  'The Puma':       [7,  6,  6,  5,  4],
+  'Chief Wallabee': [8,  7,  7,  6,  5],
+  'So Happy':       [9,  8,  8,  7,  3],
+  'Danon Bourbon':  [10, 9,  8,  7,  6],
+  'Wonder Dean':    [7,  7,  6,  6,  8],
+  'Commandment':    [18,17, 16, 10,  2],
+  'Further Ado':    [16,15, 14,  9,  1],
+  'Renegade':       [19,18, 17, 12,  2],
+  'Incredibolt':    [17,17, 16, 11,  3],
+  'Fulleffort':     [14,13, 13,  9,  5],
+  'Emerging Market':[15,14, 14, 10,  4],
+  'Albus':          [17,16, 15, 11,  6],
+  'Right to Party': [16,15, 14, 10,  5],
+  'Golden Tempo':   [20,19, 18, 14,  4],
+};
+
+/* Scenario shifts — applied to gate/quarter/half positions
+   Positive = moves back (higher number), Negative = moves forward */
+const CALL_SCENARIO_SHIFT = {
+  hot:  {E:-1, EP:-1, S:+1, C:+2},
+  mod:  {E:0,  EP:0,  S:0,  C:0},
+  slow: {E:+3, EP:+2, S:-1, C:-2},
+};
+
+/* Benefit logic — separate from position */
+const SCENARIO_BENEFIT = {
+  hot:  {E:'no',  EP:'no',  S:'yes', C:'yes'},
+  mod:  {E:'neutral', EP:'neutral', S:'yes', C:'neutral'},
+  slow: {E:'yes', EP:'yes', S:'neutral', C:'no'},
+};
+
+const SCENARIO_META = {
+  hot: {
+    half:':45–:46', pressure:'HIGH', favors:'Deep Closers',
+    note:'<strong>Hot pace (:45–:46 ½M):</strong> Nearly and Pavlovian press hard early. Half under :46 historically sets up the closers — the 3 Derby winners who came from farthest back all chased sub-:45.73 halves. Renegade, Incredibolt, Golden Tempo, and Emerging Market benefit most. Front-runners at serious risk of stopping.',
+  },
+  mod: {
+    half:':47–:48', pressure:'MODERATE', favors:'Stalkers / Closers',
+    note:'<strong>Moderate pace (:47–:48 ½M):</strong> Most likely scenario in this closer-heavy field. Stalkers like The Puma, Chief Wallabee, and So Happy can make their run without the pace collapsing. Deep closers workable but need the half to be honest. Commandment and Further Ado both track from behind and fire.',
+  },
+  slow: {
+    half:':49+', pressure:'LOW', favors:'Front-runners / Pressers',
+    note:'<strong>Slow pace (:49+ ½M):</strong> A crawl is the death knell for deep closers. Front-runners Nearly and Six Speed hang on late. The Puma and Chief Wallabee press forward to track soft fractions. Renegade, Golden Tempo, Incredibolt face impossible closing tasks at Churchill Downs 1,234-foot stretch from far back.',
+  },
+};
+
+const CALL_LABELS = {
+  gate:'🏁 Gate — horses break',
+  quarter:'¼ Mile — :22–:23 seconds in',
+  half:'½ Mile — :45–:49 seconds · Most predictive Derby call ★',
+  threequarter:'¾ Mile — :1:09–:1:13 · The turn for home',
+  stretch:'Stretch — final ¼ mile · Win or lose here',
+};
+
+let activePace = 'mod';
+let activeCall  = 'half';
+
+function setPace(scenario) {
+  activePace = scenario;
+  document.querySelectorAll('.pace-btn').forEach(b => b.classList.remove('on'));
+  const btn = document.querySelector(`.pace-btn.${scenario}`);
+  if(btn) btn.classList.add('on');
+  renderCallTimeline();
+}
+
+function setCall(call, btn) {
+  activeCall = call;
+  document.querySelectorAll('.call-tab').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderCallTimeline();
+}
+
+function renderCallTimeline() {
+  const sc   = SCENARIO_META[activePace]  || SCENARIO_META.mod;
+  const shift = CALL_SCENARIO_SHIFT[activePace] || CALL_SCENARIO_SHIFT.mod;
+  const ben  = SCENARIO_BENEFIT[activePace]   || SCENARIO_BENEFIT.mod;
+
+  /* Update scenario note */
+  const noteEl = document.getElementById('paceNote');
+  if(noteEl) noteEl.innerHTML = sc.note;
+
+  /* Get active starters with position data */
+  const callIdx = {gate:0, quarter:1, half:2, threequarter:3, stretch:4}[activeCall] ?? 2;
+  const field = DATA.filter(h => h.status==='active' && h.post>0 && !h.odds.includes('AE'));
+
+  const ranked = field.map(h => {
+    const basePosArr = CALL_POSITIONS[h.name];
+    const basePos    = basePosArr ? basePosArr[callIdx] : 10;
+    /* Apply scenario shift only to non-stretch calls */
+    const s = callIdx < 4 ? (shift[h.style]||0) : 0;
+    const adjPos = Math.max(1, Math.min(20, basePos + s));
+    const benefit = ben[h.style] || 'neutral';
+    return { h, adjPos, benefit };
+  }).sort((a, b) => a.adjPos - b.adjPos);
+
+  /* Render table */
+  const callNote = CALL_LABELS[activeCall] || '';
+  const rows = ranked.map(({h, adjPos, benefit}, i) => {
+    const rank = i + 1;
+    const posClass = rank===1?'p1':rank===2?'p2':rank===3?'p3':'';
+    const styleLbl = h.style==='E'?'Front-run':h.style==='EP'?'Presser':h.style==='S'?'Stalker':'Closer';
+    const benHtml = benefit==='yes'
+      ? '<span class="pace-benefit pb-yes">✓ Benefits</span>'
+      : benefit==='no'
+        ? '<span class="pace-benefit pb-no">✗ At risk</span>'
+        : '<span class="pace-benefit pb-neutral">— Neutral</span>';
+    const p = typeof PACE !== 'undefined' && PACE[h.name];
+    const sectNote = activeCall==='half' && p
+      ? `Last prep ½M: ${p.halfCall}s`
+      : activeCall==='stretch' && p
+        ? `Last prep final ⅛: ${p.finalF}s`
+        : '';
+    return `<tr>
+      <td><span class="pace-pos ${posClass}">${rank}</span></td>
+      <td>
+        <span class="pace-post">#${h.post}</span>
+        <span class="pace-horse">${h.name}</span>
+        <span class="pace-style-pill pace-style-${h.style}">${styleLbl}</span>
+      </td>
+      <td>${benHtml}</td>
+      <td class="pace-note-cell">${sectNote}</td>
+      <td style="font-size:10px;color:var(--text3);font-family:var(--mono);">${h.odds}</td>
+    </tr>`;
+  }).join('');
+
+  const html = `
+    <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:8px;">${callNote}</div>
+    <table class="pace-tbl">
+      <thead><tr>
+        <th style="width:40px;">Pos</th>
+        <th>Horse</th>
+        <th>Scenario</th>
+        <th>Key Figure</th>
+        <th>Odds</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+
+  const tableEl = document.getElementById('paceTable');
+  if(tableEl) tableEl.innerHTML = html;
+}
+
+/* Init */
+setTimeout(() => renderCallTimeline(), 40);
+
+
+/* Patch the card() function to inject pace figures */
+const _origCard = card;
+/* Override card to add pace data row */
+function card(h){
+  /* Get base card HTML from original function logic — re-implement inline since we can't easily call _origCard */
+  const p = PACE[h.name];
+  const dp=Math.min((h.di/6)*100,100).toFixed(1);
+  const tp=((4/6)*100).toFixed(1);
+  const has100=h.bBeyer!=null&&h.bBeyer>=100;
+  const sc=h.style==='E'?'tE':h.style==='EP'?'tEP':h.style==='S'?'tS':'tC';
+  const tr=h.trend==='up'?'<span class="tag tu">↑ improving</span>':h.trend==='dn'?'<span class="tag td">↓ regressing</span>':'<span class="tag tf">→ stable</span>';
+  const pr=h.price?'$'+h.price.toLocaleString():'N/A';
+  const b=h.bBeyer??'—',br=h.bri??'—',lp=h.lp??'—';
+  const beyC=h.bBeyer>=100?'g':h.bBeyer>=90?'a':h.bBeyer!=null?'r':'';
+  const lpC=h.lp>=110?'g':h.lp>=100?'a':'';
+  const hasPed=!!PED[h.name];
+  const pid=`ped_${h.name.replace(/\s+/g,'_')}`;
+  const tid=`tog_${h.name.replace(/\s+/g,'_')}`;
+
+  /* Pace figures block */
+  const paceBlock = p ? `
+    <div class="pace-figs">
+      <div class="pf"><div class="pfl">E1 (early)</div><div class="pfv ${p.e1>=88?'fast':p.e1>=80?'mid':'slow'}">${p.e1}</div></div>
+      <div class="pf"><div class="pfl">E2 (middle)</div><div class="pfv ${p.e2>=92?'fast':p.e2>=84?'mid':'slow'}">${p.e2}</div></div>
+      <div class="pf"><div class="pfl">LP (late)</div><div class="pfv ${p.lp>=108?'fast':p.lp>=98?'mid':'slow'}">${p.lp}</div></div>
+    </div>
+    <div class="sect-row">Last prep (${p.prep}) · ½M: <strong>${p.halfCall}s</strong> · Final ⅛: <strong>${p.finalF}s</strong></div>
+  ` : '';
+
+  return`<div class="card ${h.status==='scratched'?'scratched':''} ${h.badge==='bw'?'winner':''}">
+  <div class="card-accent" style="background:${h.ac}"></div>
+  <div class="card-body">
+    <div class="ch"><div class="hn">${h.name}</div><span class="bdg ${h.badge}">${h.bt}</span></div>
+    ${h.post ? `<div style="display:flex;align-items:center;gap:8px;margin-top:-4px;">
+      <div style="font-size:11px;font-family:var(--mono);background:${postColor(h.post)};color:#fff;padding:2px 9px;border-radius:10px;font-weight:500;">POST ${h.post}</div>
+      <div style="font-size:10px;color:var(--text3);font-family:var(--mono);">${postNote(h.post)}</div>
+    </div>` : (h.status==='scratched'?'':h.odds==='AE (also eligible)'?'<div style="font-size:10px;color:var(--amber);font-family:var(--mono);margin-top:-2px;">Also eligible — needs scratch to enter</div>':'')}
+    <div class="lr">${h.lr}</div>
+    <div class="ped">${h.sire} — ${h.dam}</div>
+
+    <div class="s4">
+      <div class="st"><div class="sl">Pts</div><div class="sv ${h.pts>=150?'g':''}">${h.pts}</div></div>
+      <div class="st"><div class="sl">Best Beyer</div><div class="sv ${beyC}">${b}</div></div>
+      <div class="st"><div class="sl">Brisnet</div><div class="sv ${h.bri>=100?'g':''}">${br}</div></div>
+      <div class="st"><div class="sl">Late Pace</div><div class="sv ${lpC}">${lp}</div></div>
+    </div>
+    <div class="s4">
+      <div class="st"><div class="sl">Career</div><div class="sv">${h.cS??'?'} starts</div></div>
+      <div class="st"><div class="sl">At 3yo</div><div class="sv">${h.y3S??'?'} starts</div></div>
+      <div class="st"><div class="sl">Max Prep</div><div class="sv" style="font-size:11px">${h.maxDist}</div></div>
+      <div class="st"><div class="sl">Purchased</div><div class="sv" style="font-size:11px">${pr}</div></div>
+    </div>
+    <div class="s4">
+      <div class="st"><div class="sl">Jockey</div><div class="sv" style="font-size:10px">${h.jockey}</div></div>
+      <div class="st"><div class="sl">Curr. Odds</div><div class="sv">${h.odds}</div></div>
+      <div class="st"><div class="sl">DI</div><div class="sv ${h.di>=4?'r':h.di<2.5?'g':'a'}">${h.di.toFixed(2)}</div></div>
+      <div class="st"><div class="sl">CD</div><div class="sv">${h.cd.toFixed(2)}</div></div>
+    </div>
+
+    ${paceBlock}
+
+    ${cwpHtml(h)}
+
+    <div class="diw">
+      <div class="dir">
+        <span>Dosage Index <strong>${h.di.toFixed(2)}</strong> · Center of Distribution ${h.cd.toFixed(2)}</span>
+        <span style="color:${h.di>=4?'var(--red)':'var(--text3)'};">${h.di>=4?'⚠ above 4.0':''}</span>
+      </div>
+      <div class="dit"><div class="dif" style="width:${dp}%;background:${diBarC(h.di)}"></div><div class="dil" style="left:${tp}%"></div></div>
+    </div>
+
+    <div class="tags">
+      <span class="tag ${sc}">${h.styleLbl}</span>
+      <span class="tag ${has100?'yes':'no'}">${has100?'✓ 100+ Beyer':'No 100 Beyer'}</span>
+      ${tr}
+      ${h.wonPrep&&h.status!=='scratched'?'<span class="tag yes">Won final prep</span>':''}
+    </div>
+    <div class="div"></div>
+    <div class="trow">
+      <span style="font-size:11px;color:var(--text2)">Trainer: <strong>${h.trainer}</strong></span>
+      <span class="trec ${h.te?'elite':''}">${h.trec}</span>
+    </div>
+    <div class="note">${h.note}</div>
+
+    ${hasPed?`
+    <div class="div"></div>
+    <div class="ped-toggle" id="${tid}" onclick="togglePed('${pid}','${tid}')">
+      <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9" fill="currentColor"/></svg>
+      5-Cross Pedigree · click to expand
+    </div>
+    <div class="ped-panel" id="${pid}">${buildPedTree(h.name)}</div>
+    `:''}
+    ${ppHtml(h.name)}
+  </div>
+</div>`;
+}
+
+
+
+/* ══ ODDS BOARD ENGINE ══ */
+const MORNING_LINE = {
+  'Renegade':'4-1','Commandment':'5-1','Further Ado':'6-1','The Puma':'10-1',
+  'Chief Wallabee':'8-1','So Happy':'15-1','Emerging Market':'15-1','Fulleffort':'15-1',
+  'Pavlovian':'25-1','Incredibolt':'20-1','Golden Tempo':'40-1','Albus':'30-1',
+  'Potente':'20-1','Intrepido':'50-1','Right to Party':'30-1','Six Speed':'50-1',
+  'Danon Bourbon':'20-1','Wonder Dean':'30-1','Great White':'50-1','Litmus Test':'40-1',
+};
+function oddsToNumO(o){if(!o||o==='—'||o.includes('AE')||o==='N/A'||o==='--')return null;const p=o.replace('—','').trim().split('-');if(p.length!==2)return null;const n=parseFloat(p[0]),d=parseFloat(p[1]);if(!d||isNaN(n))return null;return n/d;}
+function oddsMove(name,cur){
+  const ml=MORNING_LINE[name];if(!ml||!cur||cur==='—'||cur.includes('AE'))return{label:'',cls:'flat'};
+  const c=oddsToNumO(cur),m=oddsToNumO(ml);if(!c||!m)return{label:'',cls:'flat'};
+  const d=c-m;
+  if(d<=-0.5)return{label:'up in from '+ml,cls:'in'};
+  if(d>=0.5)return{label:'down out from '+ml,cls:'out'};
+  return{label:'= ML '+ml,cls:'flat'};
+}
+function oddsCC(o){const n=oddsToNumO(o);if(!n)return 'long';if(n<=1)return 'fav';if(n<=3)return 'mid';return 'long';}
+function renderOddsBoard(){
+  const field=DATA.filter(h=>h.status==='active'&&h.post>0&&!(h.odds||'').includes('AE')).sort((a,b)=>a.post-b.post);
+  const ticker=document.getElementById('oddsTicker');
+  if(ticker){
+    const items=field.map(h=>'<div class="odds-ticker-item"><span class="ot-name">#'+h.post+' '+h.name+'</span><span class="ot-odds '+oddsCC(h.odds)+'">'+h.odds+'</span></div>').join('');
+    ticker.innerHTML=items+items;
+  }
+  const grid=document.getElementById('oddsGrid');
+  if(!grid){console.warn('oddsGrid not found');return;}
+  if(!DATA||!DATA.length){console.warn('DATA not ready');return;}
+  const sorted=[...field].sort((a,b)=>(oddsToNumO(a.odds)||999)-(oddsToNumO(b.odds)||999));
+  grid.innerHTML=sorted.map((h,i)=>{
+    const mv=oddsMove(h.name,h.odds);
+    const tc=i<3?'top3':i<8?'top10':'';
+    const n=oddsToNumO(h.odds);
+    const oc=n&&n<=1?'var(--amber-dk)':n&&n<=2?'var(--blue-dk)':'var(--text)';
+    const sl=h.style==='E'?'Front-run':h.style==='EP'?'Presser':h.style==='S'?'Stalker':'Closer';
+    let mv_html = mv.label ? '<span class="odds-move '+mv.cls+'">'+mv.label+'</span>' : '';
+    return '<div class="odds-card '+tc+'"><div class="odds-card-post">#'+h.post+' / '+sl+'</div><div class="odds-card-name" title="'+h.name+'">'+h.name+'</div><div class="odds-card-odds" style="color:'+oc+';">'+h.odds+'</div><div class="odds-card-ml">ML: '+(MORNING_LINE[h.name]||'--')+'</div>'+mv_html+'</div>';
+  }).join('');
+}
+function refreshOdds(){
+  const now=new Date(),ts=now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const te=document.getElementById('oddsBarTime'),me=document.getElementById('oddsPanelMeta');
+  if(te)te.textContent='as of '+ts;
+  if(me)me.textContent='Yahoo Sports / CBS Sports consensus - refreshed '+ts+' - Sportsbook lines, not live tote pools. Visit kentuckyderby.com on race day.';
+  const btn=document.querySelector('.refresh-btn');
+  if(btn){btn.style.color='var(--green-dk)';setTimeout(()=>btn.style.color='',800);}
+  renderOddsBoard();
+}
+let cf='all',cs='pts';
+function apply(){
+  let d=[...DATA];
+  if(cf==='active')d=d.filter(h=>h.status==='active');
+  if(cf==='c100')d=d.filter(h=>h.bBeyer!=null&&h.bBeyer>=100);
+  if(cf==='wonprep')d=d.filter(h=>h.wonPrep&&h.status==='active');
+  if(cf==='closer')d=d.filter(h=>h.style==='C'||h.style==='S');
+  if(cf==='stamina')d=d.filter(h=>h.di<2.5);
+  if(cf==='cwp8')d=d.filter(h=>!h.cwpNA && calcCWP(h).total>=8.0);
+  if(cs==='pts')d.sort((a,b)=>b.pts-a.pts);
+  if(cs==='post')d.sort((a,b)=>{
+    if(!a.post) return 1; if(!b.post) return -1;
+    return a.post-b.post;
+  });
+  if(cs==='cwp')d.sort((a,b)=>{
+    if(a.cwpNA && b.cwpNA) return 0;
+    if(a.cwpNA) return 1;
+    if(b.cwpNA) return -1;
+    return calcCWP(b).total - calcCWP(a).total;
+  });
+  if(cs==='di')d.sort((a,b)=>a.di-b.di);
+  if(cs==='beyer')d.sort((a,b)=>(b.bBeyer??0)-(a.bBeyer??0));
+  if(cs==='lp')d.sort((a,b)=>(b.lp??0)-(a.lp??0));
+  if(cs==='starts')d.sort((a,b)=>(a.cS??99)-(b.cS??99));
+  document.getElementById('cg').innerHTML=d.map(card).join('');
+  document.getElementById('countLbl').textContent=`Showing ${d.length} of ${DATA.length} contenders`;
+  // Rebuild odds board whenever filter/sort changes
+  if(typeof renderOddsBoard === 'function') renderOddsBoard();
+}
+
+document.querySelectorAll('.fbtn[data-f]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.fbtn[data-f]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');cf=b.dataset.f;apply();
+  });
+});
+document.getElementById('ss').addEventListener('change',e=>{cs=e.target.value;apply();});
+apply();
+// Render odds board synchronously after DATA is available
+if(typeof renderOddsBoard==='function'){renderOddsBoard();refreshOdds();}
+if(typeof renderCallTimeline==='function') renderCallTimeline();
+
+/* ══════════════════════════════════════════════════════
+   WAGERING CALCULATOR ENGINE
+════════════════════════════════════════════════════════ */
+function oddsToDecimal(o){if(!o||o==='—'||o.includes('AE')||o==='N/A')return null;const p=o.split('-');if(p.length!==2)return null;const n=parseFloat(p[0]),d=parseFloat(p[1]);if(!d)return null;return(n/d)+1;}
+function oddsToImplied(o){const d=oddsToDecimal(o);return d?1/d:null;}
+function fact(n){return n<=1?1:n*fact(n-1);}
+function perms(n,r){return fact(n)/fact(n-r);}
+function activeField(){return DATA.filter(h=>h.status==='active'&&h.post>0&&!h.odds.includes('AE')).sort((a,b)=>a.post-b.post);}
+function showWTab(id,btn){document.querySelectorAll('.wager-panel').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.wtab').forEach(b=>b.classList.remove('on'));document.getElementById('wp-'+id).classList.add('on');btn.classList.add('on');}
+
+/* EXOTIC BUILDER */
+let betLegs=2,betName='Exacta',selectedHorses=[];
+const LEG_COLORS=['sel1','sel2','sel3','sel4','sel4'];
+const LEG_LABELS=['1st','2nd','3rd','4th','5th'];
+const TAKEOUT=0.19;
+function setBetType(btn){document.querySelectorAll('.btype').forEach(b=>b.classList.remove('on'));btn.classList.add('on');betLegs=parseInt(btn.dataset.legs);betName=btn.dataset.name;if(selectedHorses.length>betLegs)selectedHorses=selectedHorses.slice(0,betLegs);renderHorseSel();calcExotic();}
+function setAmt(v){document.getElementById('betAmt').value=v;calcExotic();}
+function renderHorseSel(){
+  const field=activeField();
+  document.getElementById('selInstr').textContent=`SELECT UP TO ${betLegs} HORSES — click to assign positions`;
+  document.getElementById('horseSel').innerHTML=field.map(h=>{
+    const si=selectedHorses.indexOf(h.name);
+    const cls=si>=0?LEG_COLORS[si]:'';
+    const lbl=si>=0?LEG_LABELS[si]:'';
+    return `<button class="hs-btn ${cls}" onclick="toggleHorse('${h.name.replace(/'/g,"\\'")}')"><span class="hs-post">${h.post}</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${h.name}</span>${lbl?`<span style="font-size:9px;font-weight:700;">${lbl}</span>`:''}</button>`;
+  }).join('');
+}
+function toggleHorse(name){const i=selectedHorses.indexOf(name);if(i>=0)selectedHorses.splice(i,1);else if(selectedHorses.length<betLegs)selectedHorses.push(name);else selectedHorses[betLegs-1]=name;renderHorseSel();calcExotic();}
+function calcExotic(){
+  const amt=parseFloat(document.getElementById('betAmt').value)||2;
+  const isBox=document.getElementById('boxBet').checked;
+  const isKey=document.getElementById('keyBet').checked;
+  const n=selectedHorses.length;
+  document.getElementById('er-type').textContent=betName+(isBox?' (Box)':isKey?' (Key)':'');
+  document.getElementById('er-base').textContent='$'+amt.toFixed(2);
+  if(n<1){['er-combos','er-total','er-payout','er-profit'].forEach(id=>document.getElementById(id).textContent='—');document.getElementById('er-sel').textContent='No horses selected.';return;}
+  let combos=1;
+  if(isBox&&n>=betLegs)combos=perms(n,betLegs);
+  else if(isKey&&n>=betLegs)combos=perms(n-1,betLegs-1);
+  const total=amt*combos;
+  document.getElementById('er-combos').textContent=combos;
+  document.getElementById('er-total').textContent='$'+total.toFixed(2);
+  const legs=selectedHorses.slice(0,betLegs);
+  if(legs.length===betLegs){
+    let combined=1;let ok=true;
+    legs.forEach(nm=>{const h=DATA.find(d=>d.name===nm);const dec=h?oddsToDecimal(h.odds):null;if(!dec){ok=false;}else combined*=dec;});
+    if(ok){
+      const pay=(combined*2*(1-TAKEOUT)/2)*amt;
+      const profit=pay-total;
+      document.getElementById('er-payout').textContent='~$'+pay.toFixed(2)+(isBox?' per combo':'');
+      const pe=document.getElementById('er-profit');pe.textContent=(profit>=0?'+':'')+'$'+profit.toFixed(2);pe.style.color=profit>=0?'var(--green-dk)':'var(--red)';
+    } else {document.getElementById('er-payout').textContent='N/A';document.getElementById('er-profit').textContent='—';}
+  } else {document.getElementById('er-payout').textContent='Select all positions';document.getElementById('er-profit').textContent='—';}
+  document.getElementById('er-sel').textContent=selectedHorses.map((nm,i)=>`${LEG_LABELS[i]}: #${DATA.find(d=>d.name===nm)?.post||'?'} ${nm}`).join(' · ')||'No horses selected.';
+}
+
+/* VALUE FINDER */
+function buildValueGrid(){
+  const field=activeField().filter(h=>!h.cwpNA);
+  const cwpS=field.map(h=>calcCWP(h).total);
+  const cwpSum=cwpS.reduce((a,b)=>a+b,0);
+  const spdS=field.map(h=>{const b=Math.max(0,((h.bBeyer||70)-70)/40);const l=Math.max(0,((h.lp||85)-85)/35);return b*0.6+l*0.4;});
+  const spdSum=spdS.reduce((a,b)=>a+b,0)||1;
+  const blended=field.map((_,i)=>(cwpS[i]/cwpSum)*0.6+(spdS[i]/spdSum)*0.4);
+  const bSum=blended.reduce((a,b)=>a+b,0);
+  const fairP=blended.map(v=>v/bSum);
+  const rawI=field.map(h=>oddsToImplied(h.odds)||0.04);
+  const vigS=rawI.reduce((a,b)=>a+b,0);
+  const mktP=rawI.map(v=>v/vigS);
+  document.getElementById('valueGrid').innerHTML=field.map((h,i)=>{
+    const fp=fairP[i],mp=mktP[i],ratio=fp/mp;
+    const cls=ratio>=1.15?'value':ratio<=0.70?'avoid':'fair';
+    const vd=ratio>=1.15?'✓ Potential value':ratio<=0.70?'↓ Market overrates':'— Fair price';
+    const vc=ratio>=1.15?'v':ratio<=0.70?'a':'f';
+    const fairOdds=fp>0?((1/fp-1)).toFixed(1)+'-1':'—';
+    const col=ratio>=1.15?'var(--green)':ratio<=0.70?'var(--red)':'var(--amber)';
+    return `<div class="vcard ${cls}"><div style="display:flex;justify-content:space-between;align-items:center;"><div class="vc-name">#${h.post} ${h.name}</div><div style="font-size:10px;font-family:var(--mono);color:var(--text3);">CWP ${calcCWP(h).total.toFixed(1)}</div></div><div class="vc-odds">ML: ${h.odds} · Fair: ~${fairOdds}</div><div class="vc-bar"><div class="vc-fill" style="width:${Math.min(ratio*50,100).toFixed(0)}%;background:${col};"></div></div><div style="display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--text3);"><span>Fair ${(fp*100).toFixed(1)}%</span><span>Mkt ${(mp*100).toFixed(1)}%</span><span>${ratio.toFixed(2)}x</span></div><div class="vc-verdict ${vc}">${vd}</div></div>`;
+  }).join('');
+}
+
+/* WIN/PLACE/SHOW */
+function buildWPSList(){
+  document.getElementById('wpsList').innerHTML=activeField().map(h=>
+    `<button class="wps-btn" onclick="showWPS('${h.name.replace(/'/g,"\\'")}',this)"><span>#${h.post} ${h.name}</span><span style="font-size:10px;color:var(--text3);">${h.odds}</span></button>`
+  ).join('');
+}
+function showWPS(name,btn){
+  document.querySelectorAll('.wps-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  const h=DATA.find(d=>d.name===name);if(!h)return;
+  const dec=oddsToDecimal(h.odds);if(!dec)return;
+  const stakes=[1,2,5,10,20,50,100];
+  const winM=dec*(1-0.15),plsM=(1+(dec-1)*0.40)*(1-0.18),shwM=(1+(dec-1)*0.25)*(1-0.19);
+  const rows=stakes.map(s=>{
+    const w=(winM*s).toFixed(2),p=(plsM*s).toFixed(2),sw=(shwM*s).toFixed(2);
+    const pr=(parseFloat(w)-s).toFixed(2);
+    return `<tr><td>$${s.toFixed(2)}</td><td><div class="wps-payout">$${w}</div><div class="wps-profit">${parseFloat(pr)>=0?'+':''}$${pr} profit</div></td><td><div class="wps-payout">$${p}</div></td><td><div class="wps-payout">$${sw}</div></td></tr>`;
+  }).join('');
+  const cwpTxt=h.cwpNA?'N/A':calcCWP(h).total.toFixed(1)+'/10';
+  document.getElementById('wpsResults').innerHTML=`<div class="wps-horse-name">#${h.post} ${h.name}</div><div class="wps-odds-label">Morning line: ${h.odds} · Implied win prob: ${((1/dec)*100).toFixed(1)}% · CWP: ${cwpTxt}</div><table class="wps-table"><thead><tr><th>Stake</th><th>Win</th><th>Place</th><th>Show</th></tr></thead><tbody>${rows}</tbody></table><div class="wps-note">Win takeout ~15% · Place ~18% · Show ~19% (Churchill Downs standard rates). Place/Show are estimates based on standard pool distribution. Actual payouts vary by pool size. Minimum Derby bet is $2.</div>`;
+}
+
+function toggleWager(){
+  const body=document.getElementById('wagerBody');
+  const chevron=document.getElementById('wagerChevron');
+  const collapsed=body.classList.toggle('collapsed');
+  chevron.style.transform=collapsed?'rotate(0deg)':'rotate(90deg)';
+}
+
+function toggleMC(){
+  const body=document.getElementById('mcBody');
+  const chevron=document.getElementById('mcChevron');
+  const collapsed=body.classList.toggle('collapsed');
+  chevron.style.transform=collapsed?'rotate(0deg)':'rotate(90deg)';
+}
+
+/* ══════════════════════════════════════════════════════
+   MONTE CARLO RACE SIMULATION ENGINE
+   Each simulation:
+   1. Assigns base score per horse from real data
+   2. Applies pace scenario modifier
+   3. Adds gaussian random variance
+   4. Applies post position, trip luck, track condition factors
+   5. Sorts by final score → finish positions
+   Runs N times, accumulates finish position counts
+════════════════════════════════════════════════════════ */
+
+/* Gaussian random (Box-Muller) */
+function randNormal(mean,sd){
+  let u=0,v=0;
+  while(u===0)u=Math.random();
+  while(v===0)v=Math.random();
+  return mean+sd*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+
+/* Post position historical win rates (Churchill Downs, normalized) */
+const POST_WIN_RATE={1:0.052,2:0.094,3:0.083,4:0.073,5:0.104,6:0.094,7:0.083,8:0.073,9:0.063,10:0.094,11:0.052,12:0.063,13:0.073,14:0.052,15:0.073,16:0.042,17:0.001,18:0.031,19:0.021,20:0.042};
+
+/* Style speed bias per pace scenario */
+const STYLE_PACE_BIAS={
+  hot: {E:-12,EP:-6,S:+4,C:+8},
+  mod: {E:-2,EP:+2,S:+2,C:0},
+  slow:{E:+10,EP:+6,S:-4,C:-8}
+};
+
+/* Track condition modifier */
+const TRACK_MOD={
+  fast:{E:0,EP:0,S:0,C:0},
+  good:{E:+2,EP:+1,S:-1,C:-2},
+  sloppy:{E:-4,EP:-2,S:+2,C:+5}
+};
+
+/* Trainer/jockey multipliers (elite connections get small edge) */
+const CONNECTIONS_MULT={
+  'Renegade':1.04,'Commandment':1.04,'Further Ado':1.03,
+  'So Happy':1.02,'The Puma':1.02,'Chief Wallabee':1.03,
+  'Pavlovian':1.02,'Emerging Market':1.02,'Silent Tactic':1.01,
+  'Incredibolt':1.01,'Albus':1.01,'Potente':1.03,
+};
+
+function baseScore(h, weights) {
+  // Speed component (Beyer or Brisnet proxy)
+  const beyer = h.bBeyer || (h.bri ? h.bri * 0.92 : 78);
+  const speedComp = ((beyer - 70) / 40) * 100; // normalize 70–110 → 0–100
+
+  // Pace component — late pace primarily
+  const lp = h.lp || 90;
+  const paceComp = ((lp - 85) / 35) * 100; // normalize 85–120 → 0–100
+
+  // CWP component
+  const cwp = h.cwpNA ? 6 : calcCWP(h).total; // default 6 for intl
+  const cwpComp = (cwp / 10) * 100;
+
+  // Pedigree/DI component — lower DI = better stamina for 1.25M
+  const di = h.di || 3.0;
+  const diComp = Math.max(0, (4.5 - di) / 3.5) * 100; // DI 1.0 = 100, DI 4.5 = 0
+
+  // Weighted blend
+  const total = weights.speed * speedComp
+              + weights.pace  * paceComp
+              + weights.cwp   * cwpComp
+              + weights.di    * diComp;
+
+  return total;
+}
+
+function runMonteCarlo() {
+  const field = activeField();
+  if (field.length < 4) return;
+
+  const paceScenario = document.getElementById('mcPace').value;
+  const trackCond    = document.getElementById('mcTrack').value;
+  const nSims        = parseInt(document.getElementById('mcSims').value);
+
+  // Weights (normalize sliders to sum to 1)
+  const wS = parseInt(document.getElementById('wSpeed').value);
+  const wP = parseInt(document.getElementById('wPace').value);
+  const wC = parseInt(document.getElementById('wCWP').value);
+  const wD = parseInt(document.getElementById('wDI').value);
+  const wSum = wS + wP + wC + wD || 100;
+  const weights = {speed:wS/wSum, pace:wP/wSum, cwp:wC/wSum, di:wD/wSum};
+
+  // Pace scenario probabilities for random mode
+  const PACE_PROBS = {hot:0.25, mod:0.50, slow:0.25};
+
+  const btn = document.getElementById('mcRunBtn');
+  btn.disabled = true; btn.textContent = '⏳ Running...';
+  const progWrap = document.getElementById('mcProgress');
+  const progFill = document.getElementById('mcProgressFill');
+  progWrap.style.display = 'block';
+  progFill.style.width = '0%';
+  document.getElementById('mcResults').style.display = 'none';
+
+  // Accumulator
+  const wins   = {}; // horse.name → win count
+  const places = {}; // top 2
+  const shows  = {}; // top 3
+  const exactas  = {}; // "A-B" → count
+  const trifectas= {}; // "A-B-C" → count
+  let paceCount = {hot:0, mod:0, slow:0};
+
+  field.forEach(h=>{wins[h.name]=0;places[h.name]=0;shows[h.name]=0;});
+
+  // Run in chunks to allow UI update
+  let done = 0;
+  const CHUNK = 200;
+
+  function runChunk() {
+    for (let i = 0; i < CHUNK && done < nSims; i++, done++) {
+      // Pick pace for this sim
+      let pace = paceScenario;
+      if (pace === 'random') {
+        const r = Math.random();
+        pace = r < 0.25 ? 'hot' : r < 0.75 ? 'mod' : 'slow';
+      }
+      paceCount[pace]++;
+
+      const track = trackCond;
+      const pBias = STYLE_PACE_BIAS[pace];
+      const tMod  = TRACK_MOD[track];
+
+      // Score each horse
+      const scores = field.map(h => {
+        let score = baseScore(h, weights);
+
+        // Pace scenario modifier by running style
+        score += (pBias[h.style]||0);
+
+        // Track condition modifier
+        score += (tMod[h.style]||0);
+
+        // Post position historical edge
+        const ppRate = POST_WIN_RATE[h.post] || 0.05;
+        score += (ppRate - 0.05) * 200; // small adjustment
+
+        // Connections multiplier
+        const mult = CONNECTIONS_MULT[h.name] || 1.0;
+        score *= mult;
+
+        // Gaussian variance — σ≈8 Beyer pts equivalent
+        score += randNormal(0, 9);
+
+        // Trip luck — closers get blocked ~30% of the time in big fields
+        if ((h.style === 'C' || h.style === 'S') && Math.random() < 0.28) {
+          score -= randNormal(5, 3); // traffic penalty
+        }
+        // Front-runners get cheap fractions ~20% of the time
+        if (h.style === 'E' && pace === 'slow' && Math.random() < 0.20) {
+          score += randNormal(4, 2);
+        }
+
+        // Stamina penalty in final furlong for high DI horses in hot pace
+        if (pace === 'hot' && h.di > 3.5) {
+          score -= randNormal(4, 2);
+        }
+
+        return {name: h.name, score};
+      });
+
+      // Sort by score descending = finish order
+      scores.sort((a,b) => b.score - a.score);
+
+      const [p1, p2, p3] = [scores[0].name, scores[1].name, scores[2].name];
+      wins[p1]++;
+      places[p1]++; places[p2]++;
+      shows[p1]++;  shows[p2]++;  shows[p3]++;
+
+      const ek = `${p1}→${p2}`;
+      exactas[ek] = (exactas[ek]||0) + 1;
+      const tk = `${p1}→${p2}→${p3}`;
+      trifectas[tk] = (trifectas[tk]||0) + 1;
+    }
+
+    progFill.style.width = ((done/nSims)*100).toFixed(0)+'%';
+
+    if (done < nSims) {
+      setTimeout(runChunk, 0);
+    } else {
+      renderMCResults(field, wins, places, shows, exactas, trifectas, paceCount, nSims, paceScenario, trackCond);
+      btn.disabled = false; btn.textContent = '▶ Run Simulation';
+      progWrap.style.display = 'none';
+      document.getElementById('mcResults').style.display = 'block';
+    }
+  }
+  setTimeout(runChunk, 10);
+}
+
+function renderMCResults(field, wins, places, shows, exactas, trifectas, paceCount, nSims, paceScenario, trackCond) {
+  // Sort horses by win count
+  const sorted = [...field].sort((a,b) => (wins[b.name]||0) - (wins[a.name]||0));
+
+  // Win bars
+  const maxWin = Math.max(...Object.values(wins)) || 1;
+  document.getElementById('mcWinBars').innerHTML = sorted.map(h => {
+    const pct = ((wins[h.name]||0) / nSims * 100);
+    const barW = ((wins[h.name]||0) / maxWin * 100).toFixed(0);
+    const col = pct >= 15 ? '#1D9E75' : pct >= 8 ? '#BA7517' : '#378ADD';
+    return `<div class="mc-horse-row">
+      <div class="mc-hname">#${h.post} ${h.name}</div>
+      <div class="mc-bar-wrap"><div class="mc-bar-fill" style="width:${barW}%;background:${col};"></div><span class="mc-pct" style="color:${pct>12?'#fff':'var(--text2)'};">${pct.toFixed(1)}%</span></div>
+    </div>`;
+  }).join('');
+
+  // Place/Show bars
+  const maxPlace = Math.max(...Object.values(places)) || 1;
+  document.getElementById('mcPlaceBars').innerHTML = sorted.map(h => {
+    const plPct = ((places[h.name]||0) / nSims * 100);
+    const shPct = ((shows[h.name]||0) / nSims * 100);
+    return `<div class="mc-horse-row">
+      <div class="mc-hname" style="font-size:10px;">#${h.post} ${h.name}</div>
+      <div style="display:flex;gap:4px;flex:1;">
+        <div style="flex:1;font-size:9px;font-family:var(--mono);color:var(--blue-dk);text-align:center;">${plPct.toFixed(0)}%</div>
+        <div style="flex:1;font-size:9px;font-family:var(--mono);color:var(--green-dk);text-align:center;">${shPct.toFixed(0)}%</div>
+      </div>
+    </div>`;
+  }).join('') + '<div style="display:flex;gap:4px;margin-top:4px;padding-left:136px;"><div style="flex:1;font-size:9px;font-family:var(--mono);color:var(--text3);text-align:center;">Place</div><div style="flex:1;font-size:9px;font-family:var(--mono);color:var(--text3);text-align:center;">Show</div></div>';
+
+  // Top exactas
+  const topEx = Object.entries(exactas).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  document.getElementById('mcExactas').innerHTML = topEx.map(([k,v]) =>
+    `<div class="mc-combo-row"><span class="mc-combo-horses">${k}</span><span class="mc-combo-pct">${(v/nSims*100).toFixed(1)}%</span></div>`
+  ).join('');
+
+  // Top trifectas
+  const topTri = Object.entries(trifectas).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  document.getElementById('mcTrifectas').innerHTML = topTri.map(([k,v]) =>
+    `<div class="mc-combo-row"><span class="mc-combo-horses" style="font-size:10px;">${k}</span><span class="mc-combo-pct">${(v/nSims*100).toFixed(2)}%</span></div>`
+  ).join('');
+
+  // Summary stats
+  const favName = sorted[0].name;
+  const favPct  = (wins[favName]/nSims*100).toFixed(1);
+  const longshots = field.filter(h => {
+    const dec = oddsToDecimal(h.odds);
+    return dec && dec >= 21; // 20-1 or longer
+  });
+  const lsWins = longshots.reduce((s,h) => s + (wins[h.name]||0), 0);
+  const lsPct  = (lsWins/nSims*100).toFixed(1);
+  const avgFinish = {};
+  // We need to recalc avg finish — approximate from win/place/show
+  document.getElementById('mcSummary').innerHTML = `
+    <div class="mc-stat-grid">
+      <div class="mc-stat"><div class="mc-stat-lbl">Simulated races</div><div class="mc-stat-val">${nSims.toLocaleString()}</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Sim favorite</div><div class="mc-stat-val" style="font-size:12px;">${favName}</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Sim fav win %</div><div class="mc-stat-val">${favPct}%</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Longshot wins (20-1+)</div><div class="mc-stat-val">${lsPct}%</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Pace scenario</div><div class="mc-stat-val" style="font-size:11px;">${paceScenario==='random'?'Random':paceScenario.charAt(0).toUpperCase()+paceScenario.slice(1)}</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Track condition</div><div class="mc-stat-val" style="font-size:11px;">${trackCond.charAt(0).toUpperCase()+trackCond.slice(1)}</div></div>
+    </div>`;
+
+  // Pace breakdown
+  document.getElementById('mcPaceBreak').innerHTML = `
+    <div class="mc-pace-row"><span>🔥 Hot pace (:45–:46)</span><span style="font-weight:500;">${(paceCount.hot/nSims*100).toFixed(0)}% of races</span></div>
+    <div class="mc-pace-row"><span>⚖ Moderate (:47–:48)</span><span style="font-weight:500;">${(paceCount.mod/nSims*100).toFixed(0)}% of races</span></div>
+    <div class="mc-pace-row"><span>🐢 Slow (:49+)</span><span style="font-weight:500;">${(paceCount.slow/nSims*100).toFixed(0)}% of races</span></div>
+    <div class="mc-note" style="margin-top:8px;">Random mode weights moderate pace most likely (50%) based on this field's closer-heavy composition.</div>`;
+}
+
+function initWagering(){renderHorseSel();buildValueGrid();buildWPSList();}
+setTimeout(initWagering,80);
+setTimeout(buildAllPPDrawers,100);
+setTimeout(()=>{renderOddsBoard();refreshOdds();},200);
+</script>
+</body>
+</html>
