@@ -385,9 +385,9 @@ select{font-size:11px;padding:4px 9px;border-radius:16px;border:1px solid var(--
       <div class="hdr-title">152nd Kentucky Derby</div>
       <div class="hdr-meta">Churchill Downs · Louisville, KY · May 2, 2026 · 1¼ Miles · $5M Purse</div>
     </div>
-    <div class="hdr-updated">Updated<br>April 30, 2026</div>
+    <div class="hdr-updated">Updated<br>May 2, 2026 — Race Day</div>
   </div>
-  <div class="alert-bar">⚠ SCRATCHES: Silent Tactic (bruised foot, Apr 29) + Fulleffort (bone chip, Apr 30) · Ocelli draws into Post 19 · Great White at Post 20 · Cox down to Commandment + Further Ado · Race: May 2, 6:57 PM ET</div>
+  <div class="alert-bar">🏁 RACE DAY — May 2, 2026 · Post time 6:57 PM ET · NBC/Peacock · 19 horses run · Scratches: The Puma (swollen pastern), Right to Party (lameness), Silent Tactic (foot), Fulleffort (bone chip) · New entrants: Great White, Ocelli, Robusta · Renegade, Commandment, So Happy 5-1 co-favs</div>
 </div>
 
 <!-- ══ ODDS TICKER ══ -->
@@ -417,12 +417,12 @@ select{font-size:11px;padding:4px 9px;border-radius:16px;border:1px solid var(--
     </div>
     <button class="refresh-btn" onclick="refreshOdds()">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-      Update timestamp
+      Refresh timestamp (odds static)
     </button>
   </div>
   <div class="odds-grid" id="oddsGrid"></div>
   <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:10px;line-height:1.5;">
-    ⬆ drifted in from ML &nbsp;·&nbsp; ⬇ drifted out &nbsp;·&nbsp; ML reference: Renegade 4-1, The Puma 10-1, Further Ado 6-1, Commandment 5-1 &nbsp;·&nbsp; On race day visit <strong>kentuckyderby.com/wager/live-odds</strong> for official tote odds.
+    ⬆ drifted in from ML &nbsp;·&nbsp; ⬇ drifted out from ML &nbsp;·&nbsp; These are <strong>static pre-race sportsbook lines</strong> as of May 2 — they cannot update automatically in a static file. For live tote odds during the race visit <strong>kentuckyderby.com</strong> or <strong>TwinSpires.com</strong>.
   </div>
 </div>
 
@@ -864,6 +864,13 @@ const PP = {
     {"dt":"Nov 22 2025","trk":"AQU","rn":"Maiden Special Weight","dist":"6F","surf":"Dirt","cond":"Fast","fin":6,"lb":"9L","bsr":"58","note":"6th on debut. Very green."},
     {"dt":"Oct 04 2025","trk":"BEL","rn":"Maiden Special Weight","dist":"5½F","surf":"Dirt","cond":"Fast","fin":2,"lb":"½L","bsr":"65","note":"2nd in 2nd start — only top-2 finish of career."},
     {"dt":"—","trk":"—","rn":"—","dist":"—","surf":"—","cond":"—","fin":"—","lb":"—","bsr":"—","note":"Only maiden in field. 0-for-6 career. History firmly against winning."}
+  ],
+  "Robusta":[
+    {"dt":"Apr 04 2026","trk":"SA","rn":"Santa Anita Derby G1","dist":"1⅛M","surf":"Dirt","cond":"Fast","fin":7,"lb":"—","bsr":"—","note":"Last of 7. Enormous reversal from San Felipe. Needs explanation."},
+    {"dt":"Feb 28 2026","trk":"SA","rn":"San Felipe S. G2","dist":"1⅟₁₆M","surf":"Dirt","cond":"Fast","fin":2,"lb":"hd","bsr":"97","note":"Nearly won at 67-1. Lost head bob to Potente. Career-best 97 Beyer."},
+    {"dt":"Jan 17 2026","trk":"SA","rn":"Maiden Special Weight","dist":"1M","surf":"Dirt","cond":"Fast","fin":1,"lb":"-2L","bsr":"—","note":"Broke maiden at 1 mile. Calumet Farm homebred."},
+    {"dt":"Nov 22 2025","trk":"SA","rn":"Maiden Special Weight","dist":"6F","surf":"Dirt","cond":"Fast","fin":4,"lb":"5L","bsr":"—","note":"Debut 4th. Showed speed."},
+    {"dt":"—","trk":"—","rn":"—","dist":"—","surf":"—","cond":"—","fin":"—","lb":"—","bsr":"—","note":"SA Derby flop is the defining question. If San Felipe form is real, live longshot."}
   ],
 };
 
@@ -1644,7 +1651,38 @@ const PED = {
       {n:"Mr. Prospector",f:"cdr"},{n:"Soapbox Darlin",f:""}
     ],
     inbreeding:["A.P. Indy 3x4 (via Nyquist through Uncle Mo and via Tapit through Pulpit)"],
-    note:"Nyquist (2016 KY Derby winner) x Tapit mare is a genuinely quality pedigree that dwarfs the $12,000 purchase price. A.P. Indy 3x4 via two completely different paths. Uncle Mo (BC Juvenile champion) x Tapit (Belmont sire) produces classic distance capability. The pedigree says he SHOULD stay 1¼ miles — but his race record says he has never been competitive. Only 3 maidens have won the Derby in 151 years. Since 1937 no maiden has finished better than 8th."
+    note:"Connect (Curlin son, Grade 1 winner) x Tapit mare is a quality pedigree that dwarfs the $12,000 purchase price. A.P. Indy 3x4 via two completely different paths. Uncle Mo (BC Juvenile champion) x Tapit (Belmont sire) produces classic distance capability. The pedigree says he SHOULD stay 1¼ miles — but his race record says he has never been competitive. Only 3 maidens have won the Derby in 151 years. Since 1937 no maiden has finished better than 8th."
+  },
+  "Robusta":{
+    g1s:"Accelerate",g1d:"Urbane Legend",
+    g2:[
+      {n:"Union Rags",f:""},
+      {n:"Bam's Now or Never",f:""},
+      {n:"Into Mischief",f:"cdr"},
+      {n:"Urbane",f:""}
+    ],
+    g3:[
+      {n:"Dixie Union",f:""},
+      {n:"Tempo",f:""},
+      {n:"Pine Island",f:""},
+      {n:"Bam's Prospector",f:""},
+      {n:"Harlan's Holiday",f:"cdr"},
+      {n:"Leslie's Lady",f:""},
+      {n:"Unbridled's Song",f:"cdr"},
+      {n:"Urbanette",f:""}
+    ],
+    g4:[
+      {n:"Dixieland Band",f:"cdr"},{n:"She's Tops",f:""},
+      {n:"Forty Niner",f:"cdr"},{n:"Danzig's Beauty",f:""},
+      {n:"Chief's Crown",f:"cdr"},{n:"Island Kitty",f:""},
+      {n:"Mr. Prospector",f:"cdr"},{n:"Bam's Folly",f:""},
+      {n:"Harlan",f:""},{n:"Christmas in Aiken",f:""},
+      {n:"Quiet American",f:""},{n:"Weekend Surprise",f:"cdr"},
+      {n:"Unbridled",f:"kd"},{n:"Trolley Song",f:""},
+      {n:"Broad Brush",f:""},{n:"Urainia",f:""}
+    ],
+    inbreeding:[],
+    note:"Accelerate (2018 BC Classic winner at 1¼M on dirt — the exact conditions of the Kentucky Derby) is one of the most compelling stamina sires in this field. Into Mischief as dam sire adds class and speed balance. Calumet Farm homebred — one of thoroughbred racing's most storied farms. The pedigree is legitimate for the Derby distance. The question is entirely about the SA Derby regression: was it a bad day, a traffic issue, or a real form reversal? O'Neill has won this race twice and Torres is a capable rider."
   }
 };
 
@@ -1659,14 +1697,14 @@ const DATA=[
    note:"Preps complete. 2-for-2 at 3yo off fast closing kicks (11.84s last furlong in Ark Derby). Dam by Curlin offsets Into Mischief speed. Late pace 110 leads division. Five career starts is ideal. Ortiz choosing between Renegade and Further Ado — decision due after entries. Field-leading closer profile."},
   {name:"Commandment",post:6,status:"active",ac:"#1D9E75",lr:"WON Florida Derby G1 · nose · 100 BSF",badge:"bw",bt:"Florida Derby ✓",
    trainer:"Brad Cox",trec:"1 Derby win · 12 starts",te:true,
-   sire:"Into Mischief",dam:"Sippican Harbor (Orb)",jockey:"Luis Saez",odds:"8-1",
+   sire:"Into Mischief",dam:"Sippican Harbor (Orb)",jockey:"Luis Saez",odds:"5-1",
    pts:200,di:3.90,cd:0.88,bBeyer:101,rBeyer:101,bri:103,lp:104,trend:"up",
    style:"C",styleLbl:"Deep Closer",cS:5,y3S:4,wonPrep:true,maxDist:"1⅛M",price:500000,
    majorPrep:"Florida Derby",finalPrepPos:1,raced2yo:true,
    note:"200 pts leads all horses — most points in field. 4-race win streak. Fastest Beyer of any 2026 prep (101). Same Into Mischief × A.P. Indy cross as 2025 HOTY Sovereignty. Dam by Orb (2013 KY Derby winner). Cox ships to Churchill April 6. Ortiz or Prat — jockey decision pending. Brad Cox barn on fire (won 3 stakes at Keeneland April 4)."},
   {name:"Further Ado",post:17,status:"active",ac:"#1D9E75",lr:"WON Blue Grass G1 · 11 lengths · 106 Beyer",badge:"bw",bt:"Blue Grass ✓",
    trainer:"Brad Cox",trec:"1 Derby win · 12 starts",te:true,
-   sire:"Gun Runner",dam:"Sky Dreamer (Sky Mesa)",jockey:"John Velazquez",odds:"8-1",
+   sire:"Gun Runner",dam:"Sky Dreamer (Sky Mesa)",jockey:"John Velazquez",odds:"6-1",
    pts:134,di:2.80,cd:0.50,bBeyer:106,rBeyer:106,bri:null,lp:100,trend:"up",
    style:"C",styleLbl:"Deep Closer",cS:6,y3S:3,wonPrep:true,maxDist:"1⅛M",price:510000,
    majorPrep:"Blue Grass",finalPrepPos:1,raced2yo:true,
@@ -1680,25 +1718,25 @@ const DATA=[
    note:"SCRATCHED April 30 — bone chip in left hind ankle, fluid present on X-ray. Cox: That is part of the game. It was a problem that needed to be addressed. Surgery planned, full recovery expected, return to racing anticipated. Cox now has two Derby horses: Commandment and Further Ado. Gaffalione misses another Derby chance. Entered off a Jeff Ruby Steaks G3 win on Tapeta — never raced on dirt."},
   {name:"Emerging Market",post:14,status:"active",ac:"#7F77DD",lr:"WON Louisiana Derby G2 · head · 90 BSF",badge:"bc",bt:"Contender",
    trainer:"Chad Brown",trec:"0 Derby wins · 25 starts",te:false,
-   sire:"Candy Ride (Arg)",dam:"Wild Empress (Empire Maker)",jockey:"Flavien Prat",odds:"13-1",
+   sire:"Candy Ride (Arg)",dam:"Wild Empress (Empire Maker)",jockey:"Flavien Prat",odds:"9-1",
    pts:100,di:2.10,cd:0.30,bBeyer:90,rBeyer:90,bri:99,lp:106,trend:"up",
    style:"C",styleLbl:"Deep Closer",cS:2,y3S:2,wonPrep:true,maxDist:"1³⁄₁₆M",price:185000,
    majorPrep:"Louisiana Derby",finalPrepPos:1,raced2yo:false,
    note:"⚠ Only 2 career starts — extreme inexperience for a 20-horse Derby. Best stamina dosage (DI 2.10) and late pace 106 ties for division lead. Candy Ride is a proven classic sire. Fappiano 4×4 inbreeding. Has not hit 100 Beyer threshold. Klaravich bypassed Derby with Cloud Computing (2017) and Early Voting (2022) in favor of the Preakness — connections may do the same."},
   {name:"So Happy",post:8,status:"active",ac:"#1D9E75",lr:"WON Santa Anita Derby G1 · +2¾L · 100 BSF",badge:"bw",bt:"Santa Anita Derby ✓",
    trainer:"Mark Glatt",trec:"0 Derby wins · 3 starts",te:false,
-   sire:"Runhappy",dam:"So Cunning (Blame)",jockey:"Mike Smith",odds:"7-1",
+   sire:"Runhappy",dam:"So Cunning (Blame)",jockey:"Mike Smith",odds:"5-1",
    pts:100,di:3.20,cd:0.62,bBeyer:100,rBeyer:100,bri:null,lp:null,trend:"up",
    style:"S",styleLbl:"Sustained Closer",cS:4,y3S:2,wonPrep:true,maxDist:"1⅛M",price:150000,
    majorPrep:"Santa Anita Derby",finalPrepPos:1,raced2yo:true,
    note:"Emotional upset for trainer Mark Glatt (wife Dena passed Feb. 12). Rated off the pace under Hall of Famer Mike Smith, drew even with Potente then powered clear. Won in 1:49.01 — faster than the last two Santa Anita Derby winners. 100 Beyer ✓. Bought for just 50K. Runhappy sire is a speed influence — dam by Blame (classic stamina) is the key counterweight. Smith: 'There's more in the tank.' First-time Derby trainer Glatt."},
-  {name:"The Puma",post:9,status:"active",ac:"#378ADD",lr:"2nd Florida Derby G1 · nose",badge:"bp",bt:"Florida Derby 2nd",
+  {name:"The Puma",post:9,status:"scratched",ac:"#D85A30",lr:"SCRATCHED — swollen pastern, skin infection (May 2, 2026)",badge:"bx",bt:"Scratched",
    trainer:"Gustavo Delgado Sr.",trec:"0 Derby wins · 1 start",te:false,
-   sire:"Essential Quality",dam:"Eve of War (Declaration of War)",jockey:"Javier Castellano",odds:"5-1",
+   sire:"Essential Quality",dam:"Eve of War (Declaration of War)",jockey:"Javier Castellano",odds:"—",
    pts:106,di:2.50,cd:0.48,bBeyer:89,rBeyer:89,bri:91,lp:98,trend:"up",
    style:"S",styleLbl:"Sustained Closer",cS:4,y3S:2,wonPrep:false,maxDist:"1⅛M",price:null,
    majorPrep:"Florida Derby",finalPrepPos:2,raced2yo:true,
-   note:"Preps complete. Back-to-back elite efforts (Tampa Bay Derby win, Florida Derby photo loss). Essential Quality (Belmont winner) × Declaration of War is a solid classic pedigree. 89 Beyer is below the 100-threshold. First-time Derby trainer Delgado. Ran into the wrong horse (Commandment) at the wire in Florida — is arguably better than his record shows."},
+   note:"SCRATCHED morning of race — swollen pastern caused by skin infection in left front leg. Trainer Gustavo Delgado Jr.: We discovered some swelling in his leg due to a skin infection. It is incredibly disappointing, but the swelling should go down within a day or two. It is just really bad timing. Delgado won the 2023 Derby with Mage. The Puma opened at 10-1, was bet to 5-1 co-favorite, and was scratched past the AE deadline — no replacement enters. Race runs with 19 horses."},
   {name:"Silent Tactic",post:13,status:"scratched",ac:"#D85A30",lr:"SCRATCHED — bruised foot (Apr 29, 2026)",badge:"bx",bt:"Scratched",
    trainer:"Mark Casse",trec:"0 Derby wins · 8 starts",te:false,
    sire:"Tacitus",dam:"Magical Sign (Gun Runner)",jockey:"Cristian Torres",odds:"—",
@@ -1708,28 +1746,28 @@ const DATA=[
    note:"SCRATCHED April 29 — bruised foot (trainer Casse compared it to a fingernail separation: painful but minor). Casse: 'You can't run in the Kentucky Derby and not be 100%.'  Target: Preakness Stakes May 16. First or second in all 6 career starts. Deep stamina pedigree (Tacitus × Gun Runner) — an unfortunate exit for a gutsy horse."},
   {name:"Chief Wallabee",post:12,status:"active",ac:"#BA7517",lr:"3rd Florida Derby G1 · ½L back",badge:"bsh",bt:"Florida Derby 3rd",
    trainer:"Bill Mott",trec:"1 Derby win (2025) · 15 starts",te:true,
-   sire:"Constitution",dam:"A La Lucie (Medaglia d'Oro)",jockey:"Junior Alvarado",odds:"14-1",
+   sire:"Constitution",dam:"A La Lucie (Medaglia d'Oro)",jockey:"Junior Alvarado",odds:"7-1",
    pts:75,di:2.80,cd:0.52,bBeyer:100,rBeyer:95,bri:98,lp:99,trend:"flat",
    style:"S",styleLbl:"Sustained Closer",cS:3,y3S:3,wonPrep:false,maxDist:"1⅛M",price:null,
    majorPrep:"Florida Derby",finalPrepPos:3,raced2yo:true,
    note:"Preps complete. Only 3 career starts — significant upside possible as he matures. Constitution × Medaglia d'Oro is a strong classic-stamina cross. Posted 100 Beyer in Fountain of Youth ✓. Florida Derby jockey said he 'didn't quicken as expected' — development curve. Mott won 2025 Derby with Sovereignty. Has the pedigree but hasn't shown the needed late acceleration yet."},
   {name:"Pavlovian",post:15,status:"active",ac:"#378ADD",lr:"2nd Louisiana Derby G2 · head · 90 BSF",badge:"bp",bt:"Louisiana Derby 2nd",
    trainer:"Doug O'Neill",trec:"2 Derby wins · 18 starts",te:true,
-   sire:"Justify",dam:"Mandy's Grace (Bellamy Road)",jockey:"Edwin Maldonado",odds:"48-1",
+   sire:"Justify",dam:"Mandy's Grace (Bellamy Road)",jockey:"Edwin Maldonado",odds:"46-1",
    pts:70,di:2.30,cd:0.40,bBeyer:90,rBeyer:90,bri:89,lp:94,trend:"up",
    style:"EP",styleLbl:"Early Presser",cS:5,y3S:2,wonPrep:false,maxDist:"1³⁄₁₆M",price:null,
    majorPrep:"Louisiana Derby",finalPrepPos:2,raced2yo:true,
    note:"Preps complete. Justify (2018 Triple Crown winner) is a premier stamina sire. Gritty runner. O'Neill has 2 Derby wins. 90 Beyer below 100 threshold. Early presser style is workable if pace sets up. Connections are confident in the distance — they've been here before."},
   {name:"Incredibolt",post:11,status:"active",ac:"#7F77DD",lr:"WON Virginia Derby · +4L · 100 BSF",badge:"bc",bt:"Contender",
    trainer:"Riley Mott",trec:"0 Derby wins · 2 starts",te:false,
-   sire:"Bold d'Oro",dam:"Sapphire Spitfire (Awesome Again)",jockey:"Jaime Torres",odds:"37-1",
+   sire:"Bold d'Oro",dam:"Sapphire Spitfire (Awesome Again)",jockey:"Jaime Torres",odds:"24-1",
    pts:60,di:2.80,cd:0.55,bBeyer:88,rBeyer:88,bri:100,lp:115,trend:"up",
    style:"C",styleLbl:"Deep Closer",cS:5,y3S:2,wonPrep:true,maxDist:"1⅛M",price:75000,
    majorPrep:"other",finalPrepPos:1,raced2yo:true,
    note:"Riley Mott now sends TWO horses to the Derby (also Wood Memorial winner Albus). Late pace 115 leads the entire division. Bold d'Oro injects stamina. 60 pts is 13th on leaderboard — safely in. Virginia Derby is a lesser comp, so Beyer (88) may be underrated. Torres rides both Incredibolt and Albus for Mott — jockey assignment TBD. 5K purchase is remarkable value."},
   {name:"Albus",post:2,status:"active",ac:"#1D9E75",lr:"WON Wood Memorial G2 · +1¼L · 83 BSF (11-1)",badge:"bw",bt:"Wood Memorial ✓",
    trainer:"Riley Mott",trec:"0 Derby wins · 2 starts",te:false,
-   sire:"Yaupon",dam:"Adream (Bernardini)",jockey:"Manny Franco",odds:"48-1",
+   sire:"Yaupon",dam:"Adream (Bernardini)",jockey:"Manny Franco",odds:"43-1",
    pts:100,di:2.65,cd:0.48,bBeyer:83,rBeyer:83,bri:null,lp:null,trend:"up",
    style:"C",styleLbl:"Deep Closer",cS:4,y3S:2,wonPrep:true,maxDist:"1⅛M",price:320000,
    majorPrep:"Wood Memorial",finalPrepPos:1,raced2yo:true,
@@ -1743,7 +1781,7 @@ const DATA=[
    note:"Preps complete. Weakened after briefly leading Florida Derby — jockey said horse was too keen and track didn't suit. Speed figures trending down (87 most recent from 89 peak). Front-pressing style is high risk in 20-horse field. Pletcher said 'may have needed the race' — but no more preps available. Was the horse he targeted but the Florida Derby exposed distance/stamina questions."},
   {name:"Golden Tempo",post:18,status:"active",ac:"#7F77DD",lr:"3rd Louisiana Derby G2 · 85 BSF",badge:"bc",bt:"Contender",
    trainer:"Cherie DeVaux",trec:"0 Derby wins · 2 starts",te:false,
-   sire:"Curlin",dam:"Carrumba (Bernardini)",jockey:"Jose Ortiz",odds:"49-1",
+   sire:"Curlin",dam:"Carrumba (Bernardini)",jockey:"Jose Ortiz",odds:"25-1",
    pts:45,di:1.95,cd:0.15,bBeyer:85,rBeyer:85,bri:88,lp:106,trend:"flat",
    style:"C",styleLbl:"Deep Closer",cS:5,y3S:3,wonPrep:false,maxDist:"1³⁄₁₆M",price:null,
    majorPrep:"Louisiana Derby",finalPrepPos:3,raced2yo:true,
@@ -1764,68 +1802,75 @@ const DATA=[
    note:"⚠ Currently 21st on leaderboard with 50 pts — needs defections to get in. Had a brutal Wood Memorial — bumped hard on first turn, was flat down the backstretch, finished 7th. Brown: 'It was such a rough trip. This horse is really good — let me go back to the drawing board.' Needs horses above him to scratch. Big upside question: only ever raced at 1M — largest distance jump of any contender to the 1¼M Derby."},
   {name:"Litmus Test",post:4,status:"active",ac:"#7F77DD",lr:"Preps complete — Santa Anita Derby participant",badge:"bc",bt:"Contender",
    trainer:"Bob Baffert",trec:"6 Derby wins · 35 starts",te:true,
-   sire:"Into Mischief",dam:"(stamina mares)",jockey:"Martin Garcia",odds:"40-1",
+   sire:"Into Mischief",dam:"(stamina mares)",jockey:"Martin Garcia",odds:"28-1",
    pts:34,di:3.55,cd:0.72,bBeyer:86,rBeyer:83,bri:90,lp:91,trend:"dn",
    style:"S",styleLbl:"Sustained Closer",cS:6,y3S:2,wonPrep:false,maxDist:"1⅛M",price:875000,
    majorPrep:"other",finalPrepPos:99,raced2yo:true,
    note:"Preps complete. Did not run in Santa Anita Derby. 34 pts is in significant danger — needs multiple defections. Speed figures have regressed over last two starts. Baffert has 6 Derby wins but needs a horse good enough to make the field. The 75K purchase has not shown the expected development."},
   {name:"Wonder Dean",post:10,status:"active",ac:"#D4537E",lr:"WON UAE Derby G2 · +2½L · Meydan dirt",badge:"bi",bt:"UAE Derby — Int'l",cwpNA:true,
    trainer:"Intl/Japan-based",trec:"—",te:false,
-   sire:"(Japanese breeding)",dam:"",jockey:"Ryusei Sakai",odds:"21-1",
+   sire:"(Japanese breeding)",dam:"",jockey:"Ryusei Sakai",odds:"22-1",
    pts:100,di:2.60,cd:0.45,bBeyer:null,rBeyer:null,bri:null,lp:null,trend:"?",
    style:"S",styleLbl:"Closer",cS:null,y3S:null,wonPrep:true,maxDist:"~1M (ME dirt)",price:null,
    majorPrep:"UAE Derby",finalPrepPos:1,raced2yo:false,
    note:"Dee Majesty (Deep Impact son, Japanese G1 winner) × Wonder Acute (Charismatic son — 1999 KY Derby/Preakness winner). 6 career starts, 2 wins. Won UAE Derby G2 by 2½L wearing down pacesetter Six Speed. Came in off a 4th in the Saudi Derby at 1 mile — Secretariat.com notes his pedigree is 'way too short' at a mile and calls him legitimate. Trainer Takayanagi conditioned T O Password (5th in 2024 KY Derby). Werk Nick Rating from TDN: C — lowest in field. 21 previous UAE Derby starters have run in the KY Derby; only Forever Young (3rd, 2024) finished better than 5th. No Beyer/Brisnet figures available — CWP not applicable."},
   {name:"Danon Bourbon",post:7,status:"active",ac:"#D4537E",lr:"WON Fukuryu Stakes · +3½L · Nakayama dirt",badge:"bi",bt:"Fukuryu — Japan",cwpNA:true,
    trainer:"Japan-based",trec:"—",te:false,
-   sire:"(Japanese breeding)",dam:"",jockey:"Atsuya Nishimura",odds:"13-1",
+   sire:"(Japanese breeding)",dam:"",jockey:"Atsuya Nishimura",odds:"14-1",
    pts:40,di:2.40,cd:0.40,bBeyer:null,rBeyer:null,bri:null,lp:null,trend:"?",
    style:"S",styleLbl:"Closer",cS:null,y3S:null,wonPrep:true,maxDist:"~1M (turf/synth)",price:null,
    majorPrep:"Fukuryu",finalPrepPos:1,raced2yo:false,
    note:"Maxfield (Street Sense son, Grade 1 winner) × Wild Ridge (Tapit mare) — the most US-pedigreed of the international horses, Kentucky-bred by Blue Heaven Farm ($450K KEESEP). 3-for-3 by combined 18½ lengths — 10L debut win, 5L allowance win, 3½L Fukuryu win. Fukuryu time (1:50.9 for 1⅛M on muddy Nakayama) is the best in that race for 20+ years. Stalking style suits a 20-horse Derby field. Wild Ridge is half-sister to graded winners Cazadero and Dubyuhnell. Maxfield × Tapit is a classic distance pedigree. KEY CAVEAT: All races on JRA dirt in Japan — no Beyer/Brisnet figures, field quality unquantifiable vs US competition. Previous Fukuryu→Derby: T O Password 5th (2024), Luxor Café 12th (2025). CWP not applicable."},
     {name:"Potente",post:13,status:"active",ac:"#BA7517",lr:"2nd Santa Anita Derby G1 · nose · 96 BSF",badge:"bp",bt:"SA Derby 2nd",
    trainer:"Bob Baffert",trec:"6 Derby wins · 35 starts",te:true,
-   sire:"Into Mischief",dam:"Sweet Swing (Awesome Again)",jockey:"Juan Hernandez",odds:"28-1",
+   sire:"Into Mischief",dam:"Sweet Swing (Awesome Again)",jockey:"Juan Hernandez",odds:"21-1",
    pts:100,di:3.80,cd:0.85,bBeyer:96,rBeyer:96,bri:null,lp:null,trend:"up",
    style:"EP",styleLbl:"Early Presser",cS:3,y3S:3,wonPrep:false,maxDist:"1⅛M",price:2400000,
    majorPrep:"Santa Anita Derby",finalPrepPos:2,raced2yo:true,
    note:"$2.4M Into Mischief colt from Speedway Stables (Peter Fluor). Won San Felipe G2 then fought gamely vs So Happy in Santa Anita Derby. Baffert: 'One of the strongest Derby horses I have brought east in a decade.' Same Into Mischief sire as Renegade and Commandment. Dam by Awesome Again (BC Classic winner) provides stamina. Post 14 is historically productive. Baffert seeks record-breaking 7th KY Derby win. Juan Hernandez in first Derby start. DI concern — same speed profile as field leaders but faces deeper closers."},
   {name:"Intrepido",post:3,status:"active",ac:"#7F77DD",lr:"4th Santa Anita Derby G1 · 89 BSF",badge:"bc",bt:"Contender",
    trainer:"Jeff Mullins",trec:"0 Derby wins · 4 starts",te:false,
-   sire:"Maximus Mischief",dam:"Overly Indulgent (Pleasantly Perfect)",jockey:"Hector Berrios",odds:"54-1",
+   sire:"Maximus Mischief",dam:"Overly Indulgent (Pleasantly Perfect)",jockey:"Hector Berrios",odds:"45-1",
    pts:38,di:2.90,cd:0.58,bBeyer:null,rBeyer:null,bri:null,lp:null,trend:"flat",
    style:"S",styleLbl:"Stalker",cS:6,y3S:4,wonPrep:false,maxDist:"1⅛M",price:385000,
    majorPrep:"Santa Anita Derby",finalPrepPos:4,raced2yo:true,
    note:"Got in when Stark Contrast defected for the American Turf. Won American Pharoah G1 at Santa Anita as a 2yo, 5th in BC Juvenile, 2nd Robert Lewis G3, 4th Santa Anita Derby G1. All racing done in California. Ridgling (undescended testicle). Post 3 is workable. Mullins: 'I didn't expect that' after sharp 47.4 work at Santa Anita April 19. First Derby for trainer Mullins since Buzzards Bay (5th) in 2005. 38 pts — the lowest of any confirmed starter. Sire Maximus Mischief primarily a speed influence; dam by Pleasantly Perfect (BC Classic winner) provides some stamina."},
-  {name:"Right to Party",post:5,status:"active",ac:"#7F77DD",lr:"2nd Wood Memorial G2 · 81 BSF",badge:"bp",bt:"Wood Memorial 2nd",
+  {name:"Right to Party",post:5,status:"scratched",ac:"#D85A30",lr:"SCRATCHED — lameness, regulatory vets (May 1, 2026)",badge:"bx",bt:"Scratched",
    trainer:"Kenny McPeek",trec:"1 Derby win (2024) · 8 starts",te:true,
-   sire:"Constitution",dam:"Havin a Party (Emcee)",jockey:"Chris Elliott",odds:"31-1",
+   sire:"Constitution",dam:"Havin a Party (Emcee)",jockey:"Chris Elliott",odds:"—",
    pts:65,di:2.70,cd:0.50,bBeyer:81,rBeyer:81,bri:90,lp:null,trend:"up",
    style:"C",styleLbl:"Deep Closer",cS:4,y3S:2,wonPrep:false,maxDist:"1⅛M",price:null,
    majorPrep:"Wood Memorial",finalPrepPos:2,raced2yo:true,
-   note:"Closed from 11th of 12 to finish 2nd in Wood Memorial — visually impressive even if Beyer (81) is below threshold. Constitution × Emcee dam is a workable stamina pedigree. McPeek won the Derby in 2024 with Mystik Dan. Post 5 is historically the best post in Derby history (10 winners). McPeek: 'He is legitimately a longshot. He's going to have to really relish Churchill.' Assistant trainer Jerkens: 'He always gets in traffic but deals with it and when he gets out he just comes running.' True closer who will need pace heat and racing luck."},
+   note:"SCRATCHED May 1 — regulatory veterinarians ruled him out for lameness. Robusta draws in as the replacement. McPeek also won the 2024 Derby with Mystik Dan. Torres (who lost Silent Tactic) picks up the Robusta mount. Post 5 historically the strongest in Derby history (10 winners) now vacated."},
   {name:"Six Speed",post:17,status:"active",ac:"#D4537E",lr:"2nd UAE Derby G2 · beaten by Wonder Dean",badge:"bi",bt:"UAE Derby 2nd",cwpNA:true,
    trainer:"Bhupat Seemar",trec:"0 Derby wins · 1 start",te:false,
-   sire:"Not This Time",dam:"Browse (Medaglia d'Oro)",jockey:"Brian Hernandez Jr.",odds:"49-1",
+   sire:"Not This Time",dam:"Browse (Medaglia d'Oro)",jockey:"Brian Hernandez Jr.",odds:"34-1",
    pts:60,di:2.45,cd:0.40,bBeyer:null,rBeyer:null,bri:null,lp:null,trend:"?",
    style:"E",styleLbl:"Front Runner",cS:5,y3S:null,wonPrep:false,maxDist:"~1³⁄₁₆M (UAE)",price:304680,
    majorPrep:"UAE Derby",finalPrepPos:2,raced2yo:false,
    note:"Kentucky-bred, purchased at Tattersalls Craven Breeze Up for £220K. Won UAE 2000 Guineas G3 by 5L then led until collared by Wonder Dean in UAE Derby. Trainer Seemar after the loss: 'He just didn't stay. He has so much speed but needs to relax.' Post 17 has NEVER produced a Derby winner in 46 runnings — the worst post in the field. Seemar ran Summer Is Tomorrow from Post 17 in 2022 (set blazing fractions, faded to last). All racing at Meydan — no US speed figures. Not This Time × Medaglia d'Oro dam is an interesting pedigree but heavy speed bias. Churchill Downs 1¼M with 20 horses from post 17 is a severe ask. CWP not applicable (international)."},
   {name:"Great White",post:20,status:"active",ac:"#D85A30",lr:"5th Blue Grass G1 · faded · synthetic specialist concern",badge:"bc",bt:"AE → In field",
    trainer:"John Ennis",trec:"0 Derby wins · 2 starts",te:false,
-   sire:"Volatile",dam:"Kelly Bag (Uncle Mo)",jockey:"Alex Achard",odds:"50-1",
+   sire:"Volatile",dam:"Kelly Bag (Uncle Mo)",jockey:"Alex Achard",odds:"23-1",
    pts:34,di:3.10,cd:0.65,bBeyer:null,rBeyer:null,bri:null,lp:null,trend:"dn",
    style:"EP",styleLbl:"Early Presser",cS:5,y3S:3,wonPrep:false,maxDist:"1⅟₁₆M (Tapeta)",price:55000,
    majorPrep:"Blue Grass",finalPrepPos:5,raced2yo:true,cwpNA:false,
    note:"Draws in from AE list replacing scratched Silent Tactic. Both career wins on Tapeta synthetic at Turfway. In the Blue Grass — his only dirt start — he set the pace and faded to a distant 5th. Trainer Ennis: 'He gets the two turns so well. I don't think distance is going to be a problem.' Volatile (G1-winning sprinter, stands at Three Chimneys for $10K) is a speed-biased sire. Dam by Uncle Mo (Nyquist's sire) adds some staying blood. $55K purchase at Fasig-Tipton December 2024. Surface switch from Tapeta to Churchill Downs dirt is the defining question — every piece of data available points to a synthetic specialist. Post 20 has a 10.5% historical win rate but is very wide with 20 horses."},
   {name:"Ocelli",post:19,status:"active",ac:"#D85A30",lr:"3rd Wood Memorial G2 · benefited from pace meltdown · 81 Beyer",badge:"bc",bt:"AE -> In field",
    trainer:"Whit Beckman",trec:"0 Derby wins · 2 starts",te:false,
-   sire:"Nyquist",dam:"Ocular (Tapit)",jockey:"Joseph Ramos",odds:"50-1",
+   sire:"Connect",dam:"Ocular (Tapit)",jockey:"Joseph Ramos",odds:"87-1",
    pts:34,di:2.60,cd:0.42,bBeyer:81,rBeyer:81,bri:null,lp:null,trend:"up",
    style:"C",styleLbl:"Deep Closer",cS:6,y3S:3,wonPrep:false,maxDist:"1⅛M",price:12000,
    majorPrep:"Wood Memorial",finalPrepPos:3,raced2yo:true,cwpNA:false,
    note:"The only maiden in the field — never won in 6 career starts. Only 3 horses have ever won the Derby as a maiden (Buchanan 1884, Sir Barton 1919, Brokers Tip 1933), and since 1937 the best finish by a maiden is 8th. Drew in replacing scratched Fulleffort. Career-best Beyer 81 came in Wood Memorial when pace collapsed and he picked up tiring horses for 3rd. $12,000 purchase — cheapest horse in the field. Nyquist x Tapit mare is a quality pedigree that far outclasses the purchase price. Beckman: quietly confident things would go our way. Post 19 from the outside. Longshot of longshots — history is firmly against him."},
-  {name:"Paladin",post:null,status:"scratched",ac:"#D85A30",lr:"SCRATCHED — condylar fracture, right front ankle",badge:"bx",bt:"Off trail",
+  {name:"Robusta",post:23,status:"active",ac:"#D85A30",lr:"Last Santa Anita Derby G1 · 7th · rebounding from worst",badge:"bc",bt:"AE -> In field",
+   trainer:"Doug O'Neill",trec:"2 Derby wins · 18 starts",te:true,
+   sire:"Accelerate",dam:"Urbane Legend (Into Mischief)",jockey:"Cristian Torres",odds:"50-1",
+   pts:34,di:2.40,cd:0.38,bBeyer:97,rBeyer:null,bri:null,lp:null,trend:"dn",
+   style:"EP",styleLbl:"Early Presser",cS:5,y3S:3,wonPrep:false,maxDist:"1⅟₁₆M",price:null,
+   majorPrep:"Santa Anita Derby",finalPrepPos:7,raced2yo:true,cwpNA:false,
+   note:"Calumet Farm homebred. Nearly beat Potente in the San Felipe at 67-1 — finished second by a head in an eye-catching performance. Then ran last of 7 in the Santa Anita Derby, which is an enormous reversal. O'Neill gets the mount after losing Silent Tactic — Torres was freed up by that scratch. Accelerate (2018 BC Classic winner at 1¼M) is a strong stamina sire. Dam by Into Mischief adds class. 7th in SA Derby needs explaining. O'Neill has won 2 Derbies (I'll Have Another 2012, Nyquist 2016). Post 23 means he breaks from the extreme outside — traffic nightmare in a 19-horse field."},
+{name:"Paladin",post:null,status:"scratched",ac:"#D85A30",lr:"SCRATCHED — condylar fracture, right front ankle",badge:"bx",bt:"Off trail",
    trainer:"Chad Brown",trec:"0 Derby wins · 9 starts",te:false,
    sire:"Gun Runner",dam:"(stamina mare)",jockey:"—",odds:"—",
    pts:60,di:2.20,cd:0.25,bBeyer:92,rBeyer:92,bri:97,lp:98,trend:"up",
@@ -2208,6 +2253,7 @@ const PACE = {
   "Nearly":         {e1:90, e2:93,  lp:90,  halfCall:"48.00", finalF:"12.80", prep:"Florida Derby G1",     projPos:3, dotColor:"#7F77DD"},
   "Golden Tempo":   {e1:70, e2:80,  lp:106, halfCall:"46.23", finalF:"12.60", prep:"Louisiana Derby G2",   projPos:9, dotColor:"#7F77DD"},
   "Ocelli":         {e1:74, e2:82,  lp:88,  halfCall:"48.80", finalF:"12.60", prep:"Wood Memorial G2",     projPos:15, dotColor:"#D85A30"},
+  "Robusta":        {e1:86, e2:90,  lp:92,  halfCall:"47.50", finalF:"12.80", prep:"San Felipe G2",         projPos:5,  dotColor:"#D85A30"},
   "Paladin":        {e1:85, e2:92,  lp:98,  halfCall:"47.20", finalF:"12.30", prep:"Risen Star G2",        projPos:4, dotColor:"#D85A30"}
 };
 
@@ -2523,7 +2569,7 @@ function refreshOdds(){
   const now=new Date(),ts=now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   const te=document.getElementById('oddsBarTime'),me=document.getElementById('oddsPanelMeta');
   if(te)te.textContent='as of '+ts;
-  if(me)me.textContent='Yahoo Sports / CBS Sports consensus - refreshed '+ts+' - Sportsbook lines, not live tote pools. Visit kentuckyderby.com on race day.';
+  if(me)me.textContent='Race-day odds as of May 2, 2026 pre-race · Static snapshot — not live tote pools · refreshed '+ts+' - Sportsbook lines, not live tote pools. Visit kentuckyderby.com on race day.';
   const btn=document.querySelector('.refresh-btn');
   if(btn){btn.style.color='var(--green-dk)';setTimeout(()=>btn.style.color='',800);}
   renderOddsBoard();
